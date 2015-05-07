@@ -429,6 +429,6 @@ exports.process = (options: ISwaggerOptions) => {
     else {
         var swaggerService = new SwaggerService(options);
         swaggerService.process();
-        console.log("process started")
+        console.log("process started...")
     }
 }
