@@ -1,0 +1,12 @@
+{
+  "name": "swag-ts-ng",
+  "version": "0.0.3",
+  "description": "Swagger client Typescript Codegen Angularjs",
+  "main": "app.js",
+  "author": {
+    "name": "zeroone"
+  },
+  "dependencies": {
+    "lodash": "^3.8.0"
+  }
+}
