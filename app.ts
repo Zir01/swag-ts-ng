@@ -239,9 +239,31 @@ class SwaggerService{
         impText += "\t\tvar path='" + signature.path + "'\n\n";
 
         // logic to create overload checks on parameters
+
+        var query = "";
         _.forEach(signature.parameters, (p: IParamDefinition, i: number) => {
-            impText += "\t\tpath = path.replace('{" + p.name + "}', " + p.name + ".toString());\n"
+            console.log('creating sig for param:', p);
+            if (p.i_n == "path")
+                impText += "\t\tpath = path.replace('{" + p.name + "}', " + p.name + ".toString());\n";
+            if (p.i_n == "query") {
+
+                if (p.type != "array") {
+                    if (i == 0)
+                        query += "\t\tpath += '?" + p.name + "=' + " + p.name + ";\n";
+                    else
+                        query += "\t\tpath += '&" + p.name + "=' + " + p.name + ";\n";
+                } else {
+                    query += "\t\tvar qs = '';\n";
+                    query += "\t\tfor (var i = 0; i < " + p.name + ".length; i++) {\n";
+                    query += "\t\t\tqs += '" + p.name + "=' + " + p.name + "[i] + '&'\n";
+                    query += "\t\t}\n";
+                    query += "\t\tif (qs.length > 0) path += '?' + qs;\n";
+                }
+            }
         });
+        if (query.length > 0) {
+            impText += query;
+        }
 
 
         impText += "\t\tvar fullPath = this.host + path;\n";
@@ -350,20 +372,32 @@ class SwaggerService{
     }
 
     private parseParameter(property: any): IParamDefinition {
-
+        console.log('property', property);
         var paramDef: string = property.name;
+        var type = this.parseType(property);
         if (!property.required) paramDef += "?";
 
+
         if (property.type) {
-            var type = this.parseType(property);
-            paramDef += ":" + type;
+            if (property.type != "array") {
+                paramDef += ":" + type;
+            } else {
+                type = "array";
+                var innertype = this.parseType(property.items);
+                paramDef += ":" + innertype + "[]";
+            }
             return {
                 name: property.name,
                 required: property.required,
                 type: type,
-                text: paramDef
+                text: paramDef,
+                i_n: property.in,
+                items: property.items
             };
         }
+
+
+
         if (property.schema) {
             if (property.schema.type) {
                 paramDef += ":" + property.schema.type;
@@ -371,7 +405,9 @@ class SwaggerService{
                     name: property.name,
                     required: property.required,
                     type: property.schema.type,
-                    text: paramDef
+                    text: paramDef,
+                    i_n: property.in,
+                    items: property.items
                 };
             } else {
                 var type = _.find(this.modelDefinitions, (md: IModelDefinition) => { return md.definitionName == property.schema.$ref; }).interfaceName;
@@ -380,7 +416,9 @@ class SwaggerService{
                     name: property.name,
                     required: property.required,
                     type: type,
-                    text: paramDef
+                    text: paramDef,
+                    i_n: property.in,
+                    items: property.items
                 };
             }
         }
@@ -411,12 +449,12 @@ class SwaggerService{
 
 }
 
-//var opt: ISwaggerOptions = {
-//    swaggerPath: "http://localhost:54144/swagger/docs/v1",
-//    destination: "app"
-//};
-//var swaggerService = new SwaggerService(opt);
-//swaggerService.process();
+var opt: ISwaggerOptions = {
+    swaggerPath: "http://localhost:54144/swagger/docs/v1",
+    destination: "app"
+};
+var swaggerService = new SwaggerService(opt);
+swaggerService.process();
 
 
 

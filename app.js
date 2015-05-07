@@ -159,9 +159,30 @@ var SwaggerService = (function () {
         impText += "\t" + signature.signature.replace(";", "{") + "\n";
         impText += "\t\tvar path='" + signature.path + "'\n\n";
         // logic to create overload checks on parameters
+        var query = "";
         _.forEach(signature.parameters, function (p, i) {
-            impText += "\t\tpath = path.replace('{" + p.name + "}', " + p.name + ".toString());\n";
+            console.log('creating sig for param:', p);
+            if (p.i_n == "path")
+                impText += "\t\tpath = path.replace('{" + p.name + "}', " + p.name + ".toString());\n";
+            if (p.i_n == "query") {
+                if (p.type != "array") {
+                    if (i == 0)
+                        query += "\t\tpath += '?" + p.name + "=' + " + p.name + ";\n";
+                    else
+                        query += "\t\tpath += '&" + p.name + "=' + " + p.name + ";\n";
+                }
+                else {
+                    query += "\t\tvar qs = '';\n";
+                    query += "\t\tfor (var i = 0; i < " + p.name + ".length; i++) {\n";
+                    query += "\t\t\tqs += '" + p.name + "=' + " + p.name + "[i] + '&'\n";
+                    query += "\t\t}\n";
+                    query += "\t\tif (qs.length > 0) path += '?' + qs;\n";
+                }
+            }
         });
+        if (query.length > 0) {
+            impText += query;
+        }
         impText += "\t\tvar fullPath = this.host + path;\n";
         impText += "\t\tvar deffered = this.q.defer();\n";
         impText += "\t\tthis.http.get(fullPath, { timeout: deffered }).then((result) => {\n";
@@ -261,17 +282,27 @@ var SwaggerService = (function () {
         }
     };
     SwaggerService.prototype.parseParameter = function (property) {
+        console.log('property', property);
         var paramDef = property.name;
+        var type = this.parseType(property);
         if (!property.required)
             paramDef += "?";
         if (property.type) {
-            var type = this.parseType(property);
-            paramDef += ":" + type;
+            if (property.type != "array") {
+                paramDef += ":" + type;
+            }
+            else {
+                type = "array";
+                var innertype = this.parseType(property.items);
+                paramDef += ":" + innertype + "[]";
+            }
             return {
                 name: property.name,
                 required: property.required,
                 type: type,
-                text: paramDef
+                text: paramDef,
+                i_n: property.in,
+                items: property.items
             };
         }
         if (property.schema) {
@@ -281,7 +312,9 @@ var SwaggerService = (function () {
                     name: property.name,
                     required: property.required,
                     type: property.schema.type,
-                    text: paramDef
+                    text: paramDef,
+                    i_n: property.in,
+                    items: property.items
                 };
             }
             else {
@@ -293,7 +326,9 @@ var SwaggerService = (function () {
                     name: property.name,
                     required: property.required,
                     type: type,
-                    text: paramDef
+                    text: paramDef,
+                    i_n: property.in,
+                    items: property.items
                 };
             }
         }
@@ -322,12 +357,12 @@ var SwaggerService = (function () {
     };
     return SwaggerService;
 })();
-//var opt: ISwaggerOptions = {
-//    swaggerPath: "http://localhost:54144/swagger/docs/v1",
-//    destination: "app"
-//};
-//var swaggerService = new SwaggerService(opt);
-//swaggerService.process();
+var opt = {
+    swaggerPath: "http://localhost:54144/swagger/docs/v1",
+    destination: "app"
+};
+var swaggerService = new SwaggerService(opt);
+swaggerService.process();
 exports.process = function (options) {
     if (!options) {
         console.error("Sorry. Please supply options with swaggerPath and destination properties");
@@ -335,6 +370,7 @@ exports.process = function (options) {
     else {
         var swaggerService = new SwaggerService(options);
         swaggerService.process();
+        console.log("process started...");
     }
 };
 //# sourceMappingURL=app.js.map
