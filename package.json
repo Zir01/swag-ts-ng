@@ -1,12 +1,16 @@
 {
-  "name": "swag-ts-ng",
-  "version": "0.0.3",
-  "description": "Swagger client Typescript Codegen Angularjs",
-  "main": "app.js",
-  "author": {
-    "name": "zeroone"
-  },
-  "dependencies": {
-    "lodash": "^3.8.0"
-  }
+    "name": "swag-ts-ng",
+    "version": "0.0.4",
+    "description": "Swagger client Typescript Codegen Angularjs",
+    "main": "app.js",
+    "author": {
+        "name": "zeroone"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Zir01/swag-ts-ng.git"
+    },
+    "dependencies": {
+        "lodash": "^3.8.0"
+    }
 }
