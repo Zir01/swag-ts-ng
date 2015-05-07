@@ -1,6 +1,6 @@
 {
     "name": "swag-ts-ng",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Swagger client Typescript Codegen Angularjs",
     "main": "app.js",
     "author": {
