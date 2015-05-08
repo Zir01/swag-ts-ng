@@ -18,6 +18,7 @@ var SwaggerService = (function () {
         console.log("Connecting to: " + this.options.swaggerPath);
         http.get(this.options.swaggerPath, function (res) {
             res.setEncoding('utf-8');
+            res;
             var swaggerString = '';
             res.on('data', function (data) {
                 swaggerString += data;
@@ -55,7 +56,10 @@ var SwaggerService = (function () {
                 console.log("Creating client class:");
                 _this.createClientCode();
             });
+        }).on('error', function (e) {
+            console.log('Error while gettings: ' + _this.options.swaggerPath + ' - ' + e.message);
         });
+        ;
     };
     SwaggerService.prototype.createInterface = function (name, definition) {
         if (definition.type == "object") {
@@ -71,22 +75,47 @@ var SwaggerService = (function () {
                 interfaceName: this.apiModuleName + ".I" + name,
                 fileContents: fileContents
             };
-            fs.writeFile(this.baseFolder + "/" + this.title + "/I" + name + ".ts", fileContents, function (err) {
-                if (err) {
-                    return console.log(err);
-                }
-                console.log("Interface I" + name + ".ts file was created");
-            });
+            fs.writeFileSync(this.baseFolder + "/" + this.title + "/I" + name + ".ts", fileContents);
+            console.log("Interface I" + name + ".ts file was created");
             this.modelDefinitions.push(modelDef);
         }
     };
     SwaggerService.prototype.createClientCode = function () {
         var _this = this;
         var template = "";
-        template += 'class ' + this.title.trim() + 'Client {\n';
-        template += '\tconstructor(public host: string, public http: ng.IHttpService, public q: ng.IQService) {\n';
+        template += 'class ' + this.title.trim() + 'Client {\n\n';
+        template += '\tprivate http: ng.IHttpService;\n';
+        template += '\private q: ng.IQService;\n\n';
+        template += '\tconstructor(public host: string, http: ng.IHttpService, q: ng.IQService) {\n';
+        template += '\t\tthis.http = http;\n';
+        template += '\t\tthis.q = q;\n';
         template += '\t}\n';
         template += '[FUNCTIONS]\n';
+        // resuable httpGet method wrapper
+        template += "\tprivate httpGet(fullPath: string): ng.IPromise<any> {\n";
+        template += "\t\tvar deffered = this.q.defer();\n";
+        template += "\t\tthis.http.get(fullPath, { timeout: deffered }).then((result) => {\n";
+        template += "\t\t\tdeffered.resolve(result.data);\n";
+        template += "\t\t}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {\n";
+        template += "\t\t\tdeffered.reject(error);\n";
+        template += "\t\t});\n";
+        template += "\t\treturn deffered.promise;\n";
+        template += "\t}\n";
+        // resuable httpPost method wrapper
+        template += "\tprivate httpPost(fullPath, object: any): ng.IPromise<any> {\n";
+        template += "\t\tvar deffered = this.q.defer();\n";
+        template += "\t\tthis.http.post(fullPath, object,\n";
+        template += "\t\t{\n";
+        template += "\t\t\theaders: {\n";
+        template += "\t\t\t\t'Content-Type': 'application/json'\n";
+        template += "\t\t\t}\n";
+        template += "\t\t}).then((result) => {\n";
+        template += "\t\t\tdeffered.resolve(result);\n";
+        template += "\t\t}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {\n";
+        template += "\t\t\tdeffered.reject(error);";
+        template += "\t\t});";
+        template += "\t\treturn deffered.promise;\n";
+        template += "\t}\n";
         template += '}\n';
         template += 'export = ' + this.title.trim() + 'Client;';
         var signatureText = "";
@@ -115,7 +144,7 @@ var SwaggerService = (function () {
                 signatureImpText = signatureImpText.substr(0, signatureImpText.length - 2);
                 signatureImpText += ") {\n[IMP]\n\t}";
                 var impText = "";
-                impText = "\t\tvar path='" + signatureWithLeastParams.path + "'\n\n";
+                impText = "\t\tvar path='" + signatureWithLeastParams.path + "';\n\n";
                 // logic to create overload checks on parameters
                 _.forEach(signatureWithMostParams.parameters, function (p, i) {
                     var arg = "arg" + i.toString();
@@ -125,13 +154,7 @@ var SwaggerService = (function () {
                     impText += "\t\t}\n\n";
                 });
                 impText += "\t\tvar fullPath = this.host + path;\n";
-                impText += "\t\tvar deffered = this.q.defer();\n";
-                impText += "\t\tthis.http.get(fullPath, { timeout: deffered }).then((result) => {\n";
-                impText += "\t\t\tdeffered.resolve(result.data);\n";
-                impText += "\t\t}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {\n";
-                impText += "\t\t\tdeffered.reject(error);\n";
-                impText += "\t\t});\n";
-                impText += "\t\treturn deffered.promise;\n";
+                impText += "\t\treturn this.httpGet(fullPath);\n";
                 signatureImpText = signatureImpText.replace("[IMP]", impText);
                 signatureText = signatureText + signatureImpText + "\n\n";
                 console.log("Function " + signatureWithMostParams.methodName + " created");
@@ -147,12 +170,8 @@ var SwaggerService = (function () {
             }
         });
         template = template.replace("[FUNCTIONS]", signatureText);
-        fs.writeFile(this.baseFolder + "/" + this.title + "/" + this.title + "Client.ts", template, function (err) {
-            if (err) {
-                return console.log(err);
-            }
-            console.log(_this.baseFolder + "/" + _this.title + "/" + _this.title + "Client.ts was created");
-        });
+        fs.writeFileSync(this.baseFolder + "/" + this.title + "/" + this.title + "Client.ts", template);
+        console.log(this.baseFolder + "/" + this.title + "/" + this.title + "Client.ts was created");
     };
     SwaggerService.prototype.getGetString = function (signature) {
         var impText = "";
@@ -161,7 +180,6 @@ var SwaggerService = (function () {
         // logic to create overload checks on parameters
         var query = "";
         _.forEach(signature.parameters, function (p, i) {
-            console.log('creating sig for param:', p);
             if (p.i_n == "path")
                 impText += "\t\tpath = path.replace('{" + p.name + "}', " + p.name + ".toString());\n";
             if (p.i_n == "query") {
@@ -184,32 +202,15 @@ var SwaggerService = (function () {
             impText += query;
         }
         impText += "\t\tvar fullPath = this.host + path;\n";
-        impText += "\t\tvar deffered = this.q.defer();\n";
-        impText += "\t\tthis.http.get(fullPath, { timeout: deffered }).then((result) => {\n";
-        impText += "\t\t\tdeffered.resolve(result.data);\n";
-        impText += "\t\t}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {\n";
-        impText += "\t\t\tdeffered.reject(error);\n";
-        impText += "\t\t});\n";
-        impText += "\t\treturn deffered.promise;\n";
-        impText += "\t}\n\n";
+        impText += "\t\treturn this.httpGet(fullPath);\n";
+        impText += "\t}\n";
         return impText;
     };
     SwaggerService.prototype.getPostString = function (signature) {
         var signatureText = "";
         signatureText += "\t" + signature.signature.replace(";", "{") + "\n";
         signatureText += "\t\tvar fullPath = this.host + '" + signature.path + "';\n";
-        signatureText += "\t\tvar deffered = this.q.defer();\n";
-        signatureText += "\t\tthis.http.post(fullPath, " + signature.parameters[0].name + ",\n";
-        signatureText += "\t\t\t{\n";
-        signatureText += "\t\t\t\theaders: {\n";
-        signatureText += "\t\t\t\t\t'Content-Type': 'application/json'\n";
-        signatureText += "\t\t\t\t}\n";
-        signatureText += "\t\t\t}).then((result) => {\n";
-        signatureText += "\t\t\t\tdeffered.resolve(result);\n";
-        signatureText += "\t\t}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {\n";
-        signatureText += "\t\t\tdeffered.reject(error);\n";
-        signatureText += "\t\t});\n";
-        signatureText += "\t\treturn deffered.promise;\n";
+        signatureText += "\t\treturn this.httpPost(fullPath, " + signature.parameters[0].name + ");\n";
         signatureText += "\t}\n\n";
         return signatureText;
     };
@@ -282,7 +283,6 @@ var SwaggerService = (function () {
         }
     };
     SwaggerService.prototype.parseParameter = function (property) {
-        console.log('property', property);
         var paramDef = property.name;
         var type = this.parseType(property);
         if (!property.required)
@@ -357,13 +357,13 @@ var SwaggerService = (function () {
     };
     return SwaggerService;
 })();
-var opt = {
-    swaggerPath: "http://localhost:54144/swagger/docs/v1",
-    destination: "app"
-};
-var swaggerService = new SwaggerService(opt);
-swaggerService.process();
-exports.process = function (options) {
+//var opt: ISwaggerOptions = {
+//    swaggerPath: "http://localhost:54144/swagger/docs/v1",
+//    destination: "app"
+//};
+//var swaggerService = new SwaggerService(opt);
+//swaggerService.process();
+exports.process = function (options, callBack) {
     if (!options) {
         console.error("Sorry. Please supply options with swaggerPath and destination properties");
     }

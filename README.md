@@ -1,6 +1,8 @@
 # swag-ts-ng
-Swagger client Typescript Codegen Angularjs
+Swagger client Typescript Codegen for Angularjs
 
+
+## Please note this is still Work in progress (experimental)
 
 ## Install
 
