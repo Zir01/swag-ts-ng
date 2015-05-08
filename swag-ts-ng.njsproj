@@ -21,7 +21,7 @@
     <OutputPath>.</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
     <EnableTypeScript>true</EnableTypeScript>
@@ -34,7 +34,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="test\sampleSwagger.txt" />
     <TypeScriptCompile Include="app.ts" />
+    <Content Include="publish.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <TypeScriptCompile Include="gulpfile.ts" />
@@ -42,14 +44,48 @@
     <TypeScriptCompile Include="Interfaces\IParamDefinition.ts" />
     <TypeScriptCompile Include="Interfaces\ISignatureDefinition.ts" />
     <TypeScriptCompile Include="Interfaces\ISwaggerOptions.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\ISecurityScheme.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IHeaders.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IResponse.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IReference.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IItems.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IXml.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\ISchema.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IParameter.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IExternalDoc.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IOperation.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IPaths.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\ILicense.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IContact.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\IInfo.ts" />
+    <TypeScriptCompile Include="Interfaces\Swagger\ISwagger.ts" />
+    <TypeScriptCompile Include="lib\Creators\interfaceCreator.ts" />
+    <TypeScriptCompile Include="lib\Creators\signatureCreator.ts" />
+    <TypeScriptCompile Include="lib\Creators\postCreator.ts" />
+    <TypeScriptCompile Include="lib\Creators\getCreator.ts" />
+    <TypeScriptCompile Include="lib\Parsers\responseParser.ts" />
+    <TypeScriptCompile Include="lib\Parsers\parameterParser.ts" />
+    <TypeScriptCompile Include="lib\Parsers\typeParser.ts" />
+    <TypeScriptCompile Include="lib\SwaggerService.ts" />
+    <TypeScriptCompile Include="Scripts\typings\chai\chai.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\gulp\gulp.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\lodash\lodash.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\lodash\lodash.ext.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\mocha\mocha.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
+    <TypeScriptCompile Include="temp.ts" />
+    <TypeScriptCompile Include="test\swaggerServiceSpec.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interfaces\" />
     <Folder Include="app\" />
+    <Folder Include="Interfaces\Swagger\" />
+    <Folder Include="lib\" />
+    <Folder Include="lib\Creators\" />
+    <Folder Include="lib\Parsers\" />
+    <Folder Include="Scripts\typings\mocha\" />
+    <Folder Include="Scripts\typings\chai\" />
+    <Folder Include="test\" />
     <Folder Include="Scripts\" />
     <Folder Include="Scripts\typings\" />
     <Folder Include="Scripts\typings\lodash\" />

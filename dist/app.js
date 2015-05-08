@@ -363,7 +363,7 @@ var SwaggerService = (function () {
 //};
 //var swaggerService = new SwaggerService(opt);
 //swaggerService.process();
-exports.process = function (options, callBack) {
+exports.process = function (options) {
     if (!options) {
         console.error("Sorry. Please supply options with swaggerPath and destination properties");
     }
