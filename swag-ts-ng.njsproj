@@ -34,7 +34,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="test\sampleSwagger.txt" />
+    <Content Include="test\samples\ContactsAPIClient.sample" />
+    <Content Include="test\samples\IAddress.sample" />
+    <Content Include="test\samples\IContact.sample" />
     <TypeScriptCompile Include="app.ts" />
     <Content Include="publish.json" />
     <Content Include="package.json" />
@@ -59,6 +61,7 @@
     <TypeScriptCompile Include="Interfaces\Swagger\IContact.ts" />
     <TypeScriptCompile Include="Interfaces\Swagger\IInfo.ts" />
     <TypeScriptCompile Include="Interfaces\Swagger\ISwagger.ts" />
+    <TypeScriptCompile Include="lib\Creators\clientCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\interfaceCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\signatureCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\postCreator.ts" />
@@ -74,6 +77,8 @@
     <TypeScriptCompile Include="Scripts\typings\mocha\mocha.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
     <TypeScriptCompile Include="temp.ts" />
+    <TypeScriptCompile Include="test\interfaceCreatorSpec.ts" />
+    <TypeScriptCompile Include="test\samples\testHelper.ts" />
     <TypeScriptCompile Include="test\swaggerServiceSpec.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +96,7 @@
     <Folder Include="Scripts\typings\lodash\" />
     <Folder Include="Scripts\typings\gulp\" />
     <Folder Include="Scripts\typings\node\" />
+    <Folder Include="test\samples\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

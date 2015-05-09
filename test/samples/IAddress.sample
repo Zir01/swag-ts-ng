@@ -1,0 +1,9 @@
+module API.ContactsAPI {
+	export interface IAddress {
+		No: string;
+		Type: string;
+		PostCode: string;
+		State: string;
+		Country: string;
+	}
+}

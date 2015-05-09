@@ -9,25 +9,22 @@ class interfaceCreator {
         for (var p in definitions) {
             var name = p;
             var definition = definitions[p];
-        
-            if (definition.type == "object") {
 
-                var fileContents = apiModuleName + " {\n"
-                fileContents += "\texport interface I" + name + " {\n";
-                for (var p in definition.properties) {
-                    fileContents += "\t\t" + p + ": " + typeParser.parse(modelDefinitions, definition.properties[p]) + ";\n";
-                }
-                fileContents += "\t}\n";
-                fileContents += "}";
-                var modelDef: IModelDefinition = {
-                    definitionName: "#/definitions/" + name,
-                    interfaceName: apiModuleName + ".I" + name,
-                    fileContents: fileContents
-                };
-                //fs.writeFileSync(this.destPath + "/" + this.swaggerObject.info.title + "/I" + name + ".ts", fileContents);
-                //console.log(" --> Interface " + this.destPath + "/" + this.swaggerObject.info.title + "/I" + name + ".ts file was created: ");
-                modelDefinitions.push(modelDef);
+            var fileContents = "module " + apiModuleName + " {\n"
+            fileContents += "\texport interface I" + name + " {\n";
+            for (var p in definition.properties) {
+                fileContents += "\t\t" + p + ": " + typeParser.parse(modelDefinitions, definition.properties[p]) + ";\n";
             }
+            fileContents += "\t}\n";
+            fileContents += "}";
+            var modelDef: IModelDefinition = {
+                definitionName: "#/definitions/" + name,
+                interfaceName: apiModuleName + ".I" + name,
+                fileName: "I" + name + ".ts",
+                fileContents: fileContents
+            };
+            modelDefinitions.push(modelDef);
+            
         }
         return modelDefinitions;
     }

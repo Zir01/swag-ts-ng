@@ -1,0 +1,10 @@
+module API.ContactsAPI {
+	export interface IContact {
+		FirstName: string;
+		LastName: string;
+		Age: number;
+		Relations: IContact[];
+		Address: IAddress;
+		fooks: string[];
+	}
+}

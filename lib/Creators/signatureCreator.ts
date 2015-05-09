@@ -1,6 +1,6 @@
-﻿import _ = require("lodash");
-import parameterParser = require("../Parsers/parameterParser");
-import responseParser = require("../Parsers/responseParser");
+﻿import _                = require("lodash");
+import parameterParser  = require("../Parsers/parameterParser");
+import responseParser   = require("../Parsers/responseParser");
 
 class signatureCreator {
     static create(modelDefinitions, pathsObject): ISignatureDefinition[]{
@@ -8,7 +8,6 @@ class signatureCreator {
         var signatureDefinitions:ISignatureDefinition[] = [];
 
         for (var p in pathsObject) {
-            //this.createSignature(p, pathsObject[p]);
             // loop through the METHODS of the path
             for (var method in pathsObject[p]) {
                 if (method != "options") {

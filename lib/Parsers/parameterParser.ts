@@ -1,5 +1,5 @@
-﻿import _ = require("lodash");
-import typeParser = require("./typeParser");
+﻿import _            = require("lodash");
+import typeParser   = require("./typeParser");
 
 class parameterParser {
     static parse(modelDefinitions: IModelDefinition[], property): IParamDefinition {

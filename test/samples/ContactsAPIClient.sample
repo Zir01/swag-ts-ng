@@ -1,0 +1,84 @@
+class ContactsAPIClient {
+
+	private http: ng.IHttpService;
+	private q: ng.IQService;
+
+	constructor(public host: string, http: ng.IHttpService, q: ng.IQService) {
+		this.http = http;
+		this.q = q;
+	}
+	Contacts_GetById(id:number):ng.IPromise<API.ContactsAPI.IContact>{
+		var path='/api/Contacts/GetById/{id}'
+
+		path = path.replace('{id}', id.toString());
+		var fullPath = this.host + path;
+		return this.httpGet(fullPath);
+	}
+	Contacts_GetByName(name:string):ng.IPromise<string>{
+		var path='/api/Contacts/GetByName/{name}'
+
+		path = path.replace('{name}', name.toString());
+		var fullPath = this.host + path;
+		return this.httpGet(fullPath);
+	}
+	Contacts_GetByNameSurname(name:string, surname:string):ng.IPromise<string>{
+		var path='/api/Contacts/GetByNameSurname/{name}/{surname}'
+
+		path = path.replace('{name}', name.toString());
+		path = path.replace('{surname}', surname.toString());
+		var fullPath = this.host + path;
+		return this.httpGet(fullPath);
+	}
+	Contacts_GetFook(fook:string):ng.IPromise<string>{
+		var path='/api/Contacts/GetFook'
+
+		path += '?fook=' + fook;
+		var fullPath = this.host + path;
+		return this.httpGet(fullPath);
+	}
+	Contacts_FindByTags(tags:number[]):ng.IPromise<API.ContactsAPI.IContact[]>{
+		var path='/api/Contacts/FindByTags'
+
+		var qs = '';
+		for (var i = 0; i < tags.length; i++) {
+			qs += 'tags=' + tags[i] + '&'
+		}
+		if (qs.length > 0) path += '?' + qs;
+		var fullPath = this.host + path;
+		return this.httpGet(fullPath);
+	}
+	Contacts_GetAll():ng.IPromise<API.ContactsAPI.IContact[]>{
+		var path='/api/Contacts/GetAll'
+
+		var fullPath = this.host + path;
+		return this.httpGet(fullPath);
+	}
+	Contacts_Save(contact:API.ContactsAPI.IContact):ng.IPromise<API.ContactsAPI.IContact>{
+		var fullPath = this.host + '/api/Contacts/Save';
+		return this.httpPost(fullPath, contact);
+	}
+
+
+	private httpGet(fullPath: string): ng.IPromise<any> {
+		var deffered = this.q.defer();
+		this.http.get(fullPath, { timeout: deffered }).then((result) => {
+			deffered.resolve(result.data);
+		}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {
+			deffered.reject(error);
+		});
+		return deffered.promise;
+	}
+	private httpPost(fullPath, object: any): ng.IPromise<any> {
+		var deffered = this.q.defer();
+		this.http.post(fullPath, object,
+		{
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((result) => {
+			deffered.resolve(result);
+		}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {
+			deffered.reject(error);		});		return deffered.promise;
+	}
+}
+export = ContactsAPIClient;

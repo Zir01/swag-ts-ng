@@ -16,6 +16,7 @@ Swagger client Typescript Codegen for Angularjs
 
     var options = {
         swaggerPath: "your swagger definition here",
-        destination: "app" // your destination folder
+        destination: "app", // your destination folder
+		moduleName: "MyModuleName" // optional
     }
     swag.process(options);
