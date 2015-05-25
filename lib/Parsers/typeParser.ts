@@ -11,7 +11,7 @@ class typeParser {
             }
         }
 
-        if (property.type == "integer") return "number";
+        if (property.type == "integer" || property.type == "number") return "number";
         if (property.type == "array") {
             if (property.items.type) return property.items.type + "[]";
             if (property.items.$ref) return "I" + property.items.$ref + "[]";

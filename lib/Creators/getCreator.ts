@@ -13,7 +13,7 @@ class getCreator{
         var query = "";
         _.forEach(signature.parameters, (p: IParamDefinition, i: number) => {
             if (p.i_n == "path")
-                impText += "\t\tpath = path.replace('{" + p.name + "}', " + p.name + ".toString());\n";
+                impText += "\t\tpath = path.replace('{" + p.name.trim() + "}', " + p.name + ".toString());\n";
             if (p.i_n == "query") {
 
                 if (p.type != "array") {

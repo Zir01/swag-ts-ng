@@ -66,7 +66,7 @@ class SwaggerService {
         // loop through paths and create Signature definitions to pass to the clientCreator creator
         console.log("Creating Function signatures from swagger.paths");
         this.signatureDefinitions = signatureCreator.create(this.modelDefinitions, this.swaggerObject.paths);
-
+        console.log(" --> Signatures created: " + this.signatureDefinitions.length + " signatures created");
 
 
         // we have all we need in and signatureDefinitions[], now create the client code to access the API

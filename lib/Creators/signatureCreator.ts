@@ -46,7 +46,6 @@ class signatureCreator {
                     };
 
                     signatureDefinitions.push(signatureDefinition);
-                    console.log(" --> Signature " + signatureDefinition.signature);
                 }
             }
         }

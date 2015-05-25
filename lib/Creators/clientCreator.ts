@@ -35,7 +35,7 @@ class clientCreator {
         template += "\t\t\t\t'Content-Type': 'application/json'\n";
         template += "\t\t\t}\n";
         template += "\t\t}).then((result) => {\n";
-        template += "\t\t\tdeffered.resolve(result);\n";
+        template += "\t\t\tdeffered.resolve(result.data);\n";
         template += "\t\t}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {\n";
         template += "\t\t\tdeffered.reject(error);";
         template += "\t\t});";

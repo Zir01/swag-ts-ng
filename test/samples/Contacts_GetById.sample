@@ -1,0 +1,7 @@
+﻿	Contacts_GetById(id:number):ng.IPromise<API.ContactsAPI.IContact>{
+		var path='/api/Contacts/GetById/{id}'
+
+		path = path.replace('{id}', id.toString());
+		var fullPath = this.host + path;
+		return this.httpGet(fullPath);
+	}

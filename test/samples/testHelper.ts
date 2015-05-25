@@ -13,5 +13,9 @@ class testHelper {
         var IAddressSample = fs.readFileSync("./test/samples/IContact.sample", "utf8");
         return IAddressSample;
     }
+    static getContacts_GetById(): string {
+        var IAddressSample = fs.readFileSync("./test/samples/Contacts_GetById.sample", "utf8");
+        return IAddressSample;
+    }
 }
 export = testHelper;
