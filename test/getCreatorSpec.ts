@@ -11,21 +11,21 @@ describe("getCreator", () => {
     describe("create()", () => {
         it("should create valid code generation for get operations", () => {
             
-            // prepare
-            var swaggerObject: Swagger.ISwagger = testHelper.getSampleSwaggerObject();
+            //// prepare
+            //var swaggerObject: Swagger.ISwagger = testHelper.getSampleSwaggerObject();
 
-            // act
-            var modelDefinitions: IModelDefinition[] = interfaceCreator.create(swaggerObject.definitions, "API.ContactsAPI");
+            //// act
+            //var modelDefinitions: IModelDefinition[] = interfaceCreator.create(swaggerObject.definitions, "API.ContactsAPI");
 
 
-            var signatureDefinitions: ISignatureDefinition[] = signatureCreator.create(modelDefinitions, swaggerObject.paths);
+            //var signatureDefinitions: ISignatureDefinition[] = signatureCreator.create(modelDefinitions, swaggerObject.paths);
 
-            _.forEach(signatureDefinitions, (sd: ISignatureDefinition) => {
-                var getCode = getCreator.create(sd);
-                console.log(getCode);
-                console.log(testHelper.getContacts_GetById());
-                expect(getCode).equals(testHelper.getContacts_GetById());
-            });
+            //_.forEach(signatureDefinitions, (sd: ISignatureDefinition) => {
+            //    var getCode = getCreator.create(sd);
+            //    console.log(getCode);
+            //    console.log(testHelper.getContacts_GetById());
+            //    expect(getCode).equals(testHelper.getContacts_GetById());
+            //});
             
             
 

@@ -5,8 +5,8 @@ var rename = require('gulp-rename');
 var gulpMocha = require('gulp-mocha');
 
 gulp.task('test', function () {
-    //return gulp.src('./test/*.js', { read: false })
-    //    .pipe(gulpMocha({ reporter: '' }));
+    return gulp.src('./test/*.js', { read: false })
+        .pipe(gulpMocha({ reporter: '' }));
 });
 
 
