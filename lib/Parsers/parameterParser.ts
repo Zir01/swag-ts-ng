@@ -30,15 +30,35 @@ class parameterParser {
 
         if (property.schema) {
             if (property.schema.type) {
-                paramDef += ":" + property.schema.type;
-                return {
-                    name: property.name,
-                    required: property.required,
-                    type: property.schema.type,
-                    text: paramDef,
-                    i_n: property.in,
-                    items: property.items
-                };
+
+                if (property.schema.type != "array") {
+                    paramDef += ":" + property.schema.type;
+                    return {
+                        name: property.name,
+                        required: property.required,
+                        type: property.schema.type,
+                        text: paramDef,
+                        i_n: property.in,
+                        items: property.items
+                    };
+                }
+                if (property.schema.type == "array") {
+                    var type = _.find(modelDefinitions, (md: IModelDefinition) => { return md.definitionName == property.schema.items.$ref; }).interfaceName;
+                    paramDef += ":" + type + "[]";
+                    return {
+                        name: property.name,
+                        required: property.required,
+                        type: property.schema.type,
+                        text: paramDef,
+                        i_n: property.in,
+                        items: property.items
+                    };
+                }
+
+
+
+
+
             } else {
                 var type = _.find(modelDefinitions, (md: IModelDefinition) => { return md.definitionName == property.schema.$ref; }).interfaceName;
                 paramDef += ":" + type;
