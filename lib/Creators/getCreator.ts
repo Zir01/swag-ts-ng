@@ -11,13 +11,14 @@ class getCreator{
         // logic to create overload checks on parameters
 
         var query = "";
+        var queryCnt = 0;
         _.forEach(signature.parameters, (p: IParamDefinition, i: number) => {
             if (p.i_n == "path")
                 impText += "\t\tpath = path.replace('{" + p.name.trim() + "}', " + p.name + ".toString());\n";
             if (p.i_n == "query") {
 
                 if (p.type != "array") {
-                    if (i == 0)
+                    if (queryCnt == 0)
                         query += "\t\tpath += '?" + p.name + "=' + " + p.name + ";\n";
                     else
                         query += "\t\tpath += '&" + p.name + "=' + " + p.name + ";\n";
@@ -28,6 +29,7 @@ class getCreator{
                     query += "\t\t}\n";
                     query += "\t\tif (qs.length > 0) path += '?' + qs;\n";
                 }
+                queryCnt++;
             }
         });
         if (query.length > 0) {

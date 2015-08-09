@@ -2,7 +2,7 @@
 import http = require("http");
 
 
-http.get("http://localhost:49250/swagger/docs/v1", (res) => {
+http.get("http://bahrain/placemakerbuilderserver/swagger/docs/v1", (res) => {
     res.setEncoding('utf-8');
     var swaggerString = '';
     res.on('data', (data) => {

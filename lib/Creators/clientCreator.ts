@@ -11,6 +11,7 @@ class clientCreator {
         template += '\tprivate q: ng.IQService;\n\n';
         template += '\tconstructor(public host: string, http: ng.IHttpService, q: ng.IQService) {\n';
         template += '\t\tthis.http = http;\n';
+        template += '\t\tthis.http.defaults.withCredentials = true;\n';
         template += '\t\tthis.q = q;\n';
         template += '\t}\n';
         template += '[FUNCTIONS]\n';
