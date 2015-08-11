@@ -39,7 +39,12 @@ class postCreator {
             return p.i_n == "body";
         });
 
-        signatureText += "\t\treturn this.httpPost(path, " + bodyparam.name + ");\n";
+        if (bodyparam) {
+            signatureText += "\t\treturn this.httpPost(path, " + bodyparam.name + ");\n";
+        } else {
+            signatureText += "\t\treturn this.httpPost(path, null);\n";
+        }
+
         signatureText += "\t}\n\n";
         return signatureText;
     }
