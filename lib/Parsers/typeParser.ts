@@ -4,7 +4,7 @@ class typeParser {
         if (!property.type) {
             // check $ref;
             if (property.$ref) {
-                return "I" + property.$ref;
+                return property.$ref.replace("#/definitions/", "I");
             }
             if (property.schema.$ref) {
                 return _.find(modelDefinitions, (md: IModelDefinition) => { return md.definitionName == property.schema.$ref; }).interfaceName;
