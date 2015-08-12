@@ -63,6 +63,7 @@
     <TypeScriptCompile Include="Interfaces\Swagger\IInfo.ts" />
     <TypeScriptCompile Include="Interfaces\Swagger\ISwagger.ts" />
     <TypeScriptCompile Include="lib\Creators\clientCreator.ts" />
+    <TypeScriptCompile Include="lib\Creators\creatorHelper.ts" />
     <TypeScriptCompile Include="lib\Creators\interfaceCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\signatureCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\postCreator.ts" />
