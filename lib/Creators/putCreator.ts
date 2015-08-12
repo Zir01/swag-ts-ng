@@ -1,7 +1,7 @@
-﻿import _      = require("lodash");
+﻿import _ = require("lodash");
 import helper = require("./creatorHelper");
 
-class postCreator {
+class putCreator {
     static create(signature: ISignatureDefinition): string {
         var result = "\n\t" + signature.signature.replace(";", " {") + "\n";
         result += helper.generatePathFromSignature(signature);
@@ -12,9 +12,9 @@ class postCreator {
         });
 
         if (bodyparam) {
-            result += "\t\treturn this.httpPost(path, " + bodyparam.name + ");\n";
+            result += "\t\treturn this.httpPut(path, " + bodyparam.name + ");\n";
         } else {
-            result += "\t\treturn this.httpPost(path, null);\n";
+            result += "\t\treturn this.httpPut(path, null);\n";
         }
 
         result += "\t}\n";
@@ -22,4 +22,4 @@ class postCreator {
     }
 }
 
-export = postCreator;
+export = putCreator;

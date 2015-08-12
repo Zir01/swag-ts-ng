@@ -4,29 +4,31 @@ class typeParser {
         if (!property.type) {
             // check $ref;
             if (property.$ref) {
-                return "I" + property.$ref;
+                return property.$ref.replace("#/definitions/", "I");
             }
             if (property.schema.$ref) {
                 return _.find(modelDefinitions, (md: IModelDefinition) => { return md.definitionName == property.schema.$ref; }).interfaceName;
             }
         }
 
-        if (property.type == "integer" || property.type == "number") return "number";
-        if (property.type == "string") {
-            if (property.format == "date-time") {
-                return "Date";
-            }
-        }
-        if (property.type == "array") {
-            if (property.items.type) {
-                if (property.items.type != "array")
-                    return property.items.type + "[]";
-                else
-                    return property.items.items.type + "[]";
-            }
-            if (property.items.$ref) return "I" + property.items.$ref + "[]";
+        switch (property.type) {
+            case "array":
+                return this.parse(modelDefinitions, property.items) + "[]";
+            case "boolean":
+                return "boolean";
+            case "integer":
+                return "number";
+            case "number":
+                return "number";
+            case "string":
+                if (property.format === "date-time" || property.format === "date") {
+                    return "Date";
+                }
+
+                return "string";
         }
 
+        console.log("Warning: Unknown data type '" + property.type + "'");
         return property.type;
     }
 }

@@ -1,6 +1,8 @@
-﻿import _            = require("lodash");
-import postCreator  = require("./postCreator");
-import getCreator   = require("./getCreator");
+﻿import _             = require("lodash");
+import deleteCreator = require("./deleteCreator");
+import getCreator    = require("./getCreator");
+import postCreator   = require("./postCreator");
+import putCreator    = require("./putCreator");
 
 class clientCreator {
     static create(swaggerTitle: string, signatureDefinitions: ISignatureDefinition[]): string {
@@ -14,39 +16,46 @@ class clientCreator {
         template += '\t\tthis.http.defaults.withCredentials = true;\n';
         template += '\t\tthis.q = q;\n';
         template += '\t}\n';
-        template += '[FUNCTIONS]\n';
+        template += '[FUNCTIONS]';
+
+        // resuable httpDelete method wrapper
+        template += "\tprivate httpDelete(fullPath: string): ng.IPromise<any> {\n";
+        template += "\t\tvar deferred = this.q.defer();\n";
+        template += "\t\tthis.http.delete(fullPath, { timeout: deferred })\n";
+        template += "\t\t\t.then((result: angular.IHttpPromiseCallbackArg<{}>) => { deferred.resolve(result.data); })\n";
+        template += "\t\t\t.catch((error: ng.IHttpPromiseCallbackArg<string>) => { deferred.reject(error); });\n";
+        template += "\t\treturn deferred.promise;\n";
+        template += "\t}\n\n";
 
         // resuable httpGet method wrapper
         template += "\tprivate httpGet(fullPath: string): ng.IPromise<any> {\n";
-        template += "\t\tvar deffered = this.q.defer();\n";
-        template += "\t\tthis.http.get(fullPath, { timeout: deffered }).then((result) => {\n";
-        template += "\t\t\tdeffered.resolve(result.data);\n";
-        template += "\t\t}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {\n";
-        template += "\t\t\tdeffered.reject(error);\n";
-        template += "\t\t});\n";
-        template += "\t\treturn deffered.promise;\n";
-        template += "\t}\n";
+        template += "\t\tvar deferred = this.q.defer();\n";
+        template += "\t\tthis.http.get(fullPath, { timeout: deferred })\n";
+        template += "\t\t\t.then((result: angular.IHttpPromiseCallbackArg<{}>) => { deferred.resolve(result.data); })\n";
+        template += "\t\t\t.catch((error: ng.IHttpPromiseCallbackArg<string>) => { deferred.reject(error); });\n";
+        template += "\t\treturn deferred.promise;\n";
+        template += "\t}\n\n";
 
         // resuable httpPost method wrapper
-        template += "\tprivate httpPost(fullPath, object: any): ng.IPromise<any> {\n";
-        template += "\t\tvar deffered = this.q.defer();\n";
-        template += "\t\tthis.http.post(fullPath, object,\n";
-        template += "\t\t{\n";
-        template += "\t\t\theaders: {\n";
-        template += "\t\t\t\t'Content-Type': 'application/json'\n";
-        template += "\t\t\t}\n";
-        template += "\t\t}).then((result) => {\n";
-        template += "\t\t\tdeffered.resolve(result.data);\n";
-        template += "\t\t}).catch((error: ng.IHttpPromiseCallbackArg<string>) => {\n";
-        template += "\t\t\tdeffered.reject(error);";
-        template += "\t\t});";
-        template += "\t\treturn deffered.promise;\n";
-        template += "\t}\n";
+        template += "\tprivate httpPost(fullPath: string, object: any): ng.IPromise<any> {\n";
+        template += "\t\tvar deferred = this.q.defer();\n";
+        template += "\t\tthis.http.post(fullPath, object, { headers: { \"Content-Type\": \"application/json\" } })\n";
+        template += "\t\t\t.then((result: angular.IHttpPromiseCallbackArg<{}>) => { deferred.resolve(result.data); })\n";
+        template += "\t\t\t.catch((error: ng.IHttpPromiseCallbackArg<string>) => { deferred.reject(error); });\n";
+        template += "\t\treturn deferred.promise;\n";
+        template += "\t}\n\n";
 
+        // resuable httpPut method wrapper
+        template += "\tprivate httpPut(fullPath: string, object: any): ng.IPromise<any> {\n";
+        template += "\t\tvar deferred = this.q.defer();\n";
+        template += "\t\tthis.http.put(fullPath, object, { headers: { \"Content-Type\": \"application/json\" } })\n";
+        template += "\t\t\t.then((result: angular.IHttpPromiseCallbackArg<{}>) => { deferred.resolve(result.data); })\n";
+        template += "\t\t\t.catch((error: ng.IHttpPromiseCallbackArg<string>) => { deferred.reject(error); });\n";
+        template += "\t\treturn deferred.promise;\n";
+        template += "\t}\n";
 
         template += '}\n';
         template += 'export = ' + swaggerTitle.trim() + 'Client;';
-
 
         var signatureText = "";
 
@@ -101,12 +110,20 @@ class clientCreator {
                 signatureImpText = signatureImpText.replace("[IMP]", impText);
                 signatureText = signatureText + signatureImpText + "\n\n";
             } else {
+                if (signatures[0].method == "delete") {
+                    signatureText += deleteCreator.create(signatures[0]);
+                }
+
+                if (signatures[0].method == "get") {
+                    signatureText += getCreator.create(signatures[0]);
+                }
 
                 if (signatures[0].method == "post") {
                     signatureText += postCreator.create(signatures[0]);
                 }
-                if (signatures[0].method == "get") {
-                    signatureText += getCreator.create(signatures[0]);
+
+                if (signatures[0].method == "put") {
+                    signatureText += putCreator.create(signatures[0]);
                 }
             }
         });

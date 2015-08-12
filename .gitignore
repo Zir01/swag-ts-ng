@@ -1,0 +1,14 @@
+node_modules
+*.suo
+.vs/
+.ntvs_analysis.dat
+Interfaces/**/*.js
+Interfaces/**/*.js.map
+lib/**/*.js
+lib/**/*.js.map
+test/**/*.js
+test/**/*.js.map
+/*.js
+/*.js.map
+.settings/
+API/
