@@ -30,11 +30,17 @@ class signatureCreator {
                         signature += "()";
                     }
 
+                    var responseFound: boolean = false;
                     for (var r in responses) {
                         if (r == "200") {
                             var responseType: string = responseParser.parse(modelDefinitions, responses[r]);
-                            signature += ":ng.IPromise<" + responseType + ">;"
+                            signature += ": ng.IPromise<" + responseType + ">;"
+                            responseFound = true;
                         }
+                    }
+
+                    if (!responseFound) {
+                        signature += ": ng.IPromise<any>;"
                     }
 
                     var signatureDefinition: ISignatureDefinition = {
