@@ -5,18 +5,17 @@ import postCreator   = require("./postCreator");
 import putCreator    = require("./putCreator");
 
 class clientCreator {
-    static create(swaggerTitle: string, signatureDefinitions: ISignatureDefinition[]): string {
-
+    static create(options: ISwaggerOptions, signatureDefinitions: ISignatureDefinition[]): string {
         var template: string = "";
-        template += 'class ' + swaggerTitle.trim() + 'Client {\n\n';
-        template += '\tprivate http: ng.IHttpService;\n';
-        template += '\tprivate q: ng.IQService;\n\n';
-        template += '\tconstructor(public host: string, http: ng.IHttpService, q: ng.IQService) {\n';
-        template += '\t\tthis.http = http;\n';
-        template += '\t\tthis.http.defaults.withCredentials = true;\n';
-        template += '\t\tthis.q = q;\n';
-        template += '\t}\n';
-        template += '[FUNCTIONS]';
+        template += "class " + options.clientClassName + " {\n";
+        template += "\tprivate http: ng.IHttpService;\n";
+        template += "\tprivate q: ng.IQService;\n\n";
+        template += "\tconstructor(public host: string, http: ng.IHttpService, q: ng.IQService) {\n";
+        template += "\t\tthis.http = http;\n";
+        template += "\t\tthis.http.defaults.withCredentials = true;\n";
+        template += "\t\tthis.q = q;\n";
+        template += "\t}\n";
+        template += "[FUNCTIONS]\n";
 
         // resuable httpDelete method wrapper
         template += "\tprivate httpDelete(fullPath: string): ng.IPromise<any> {\n";
@@ -54,9 +53,6 @@ class clientCreator {
         template += "\t\treturn deferred.promise;\n";
         template += "\t}\n";
 
-        template += '}\n';
-        template += 'export = ' + swaggerTitle.trim() + 'Client;';
-
         var signatureText = "";
 
         // get a list of unique signatures names
@@ -76,8 +72,6 @@ class clientCreator {
                 _.forEach(signatures, (s: ISignatureDefinition) => {
                     signatureText += "\t" + s.signature + "\n";
                 });
-
-
 
                 // get the signature with the most and least parameters, we will use it to create the implementation for this method
                 var signatureWithLeastParams = _.min<ISignatureDefinition>(signatures, "parameters.length");
@@ -102,7 +96,6 @@ class clientCreator {
                     impText += "\t\t\tpath = path.replace('{" + arg + "}', " + arg + ".toString());\n"
                     impText += "\t\t}\n\n"
                 });
-
 
                 impText += "\t\tvar fullPath = this.host + path;\n";
                 impText += "\t\treturn this.httpGet(fullPath);\n";
@@ -129,11 +122,21 @@ class clientCreator {
         });
         template = template.replace("[FUNCTIONS]", signatureText);
 
+        if (options.clientModuleName) {
+            template = template.replace(/^\t/gm, "\t\t");
+            template = "module " + options.clientModuleName + " {\n\texport " + template;
+            template += "\t}\n";
+            template += "}\n";
+        } else {
+            template += "}\n";
+            template += "\nexport = " + options.clientClassName + "\n";
+        }
+
         return template;
 
         //fs.writeFileSync(this.destPath + "/" + this.swaggerObject.info.title + "/" + this.swaggerObject.info.title + "Client.ts", template);
         //console.log(" --> " + this.destPath + "/" + this.swaggerObject.info.title + "/" + this.swaggerObject.info.title + "Client.ts was created");
-       
     }
 }
+
 export = clientCreator;
