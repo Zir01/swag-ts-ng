@@ -1,20 +1,15 @@
-﻿import querystring      = require("querystring");
-import http             = require("http");
-import fs               = require("fs");
+﻿import fs               = require("fs");
 import path             = require("path");
 import _                = require("lodash");
-import typeParser       = require("./Parsers/typeParser");
-import parameterParser  = require("./Parsers/parameterParser");
-import responseParser   = require("./Parsers/responseParser");
-import getCreator       = require("./Creators/getCreator");
-import postCreator      = require("./Creators/postCreator");
 import signatureCreator = require("./Creators/signatureCreator");
 import interfaceCreator = require("./Creators/interfaceCreator");
+import classCreator     = require("./Creators/classCreator");
 import clientCreator    = require("./Creators/clientCreator");
 
 class SwaggerService {
     modelDefinitions: IModelDefinition[];
     signatureDefinitions: ISignatureDefinition[];
+    classDefinitions: IClassDefinition[];
 
     constructor(public options: ISwaggerOptions) {
         this.modelDefinitions = [];
@@ -40,13 +35,12 @@ class SwaggerService {
     public process() {
         console.log('Starting Parse!');
 
-        // create destination folders if they do not exist
-        this.mkdirSync(this.options.interfaceDestination);
-        this.mkdirSync(this.options.clientDestination);
-
         // loop through definitions
-        console.log("Creating Interfaces file from swagger.definitions");
+        console.log("Creating Interfaces from swagger.definitions");
         this.modelDefinitions = interfaceCreator.create(this.options.swaggerObject.definitions, this.options.modelModuleName);
+
+        console.log("Creating Classes from swagger.definitions");
+        this.classDefinitions = classCreator.create(this.options.swaggerObject.definitions, this.modelDefinitions, this.options.modelModuleName);
 
         // loop through paths and create Signature definitions to pass to the clientCreator creator
         console.log("Creating Function signatures from swagger.paths");
@@ -58,12 +52,23 @@ class SwaggerService {
         var clientCode = clientCreator.create(this.options, this.signatureDefinitions);
 
         // done, now lets go ahead and create the code files
+        this.mkdirSync(this.options.interfaceDestination);
         _.forEach(this.modelDefinitions, (md: IModelDefinition) => {
             var fileName = this.options.interfaceDestination + "/" + md.fileName;
             fs.writeFileSync(fileName, md.fileContents);
             console.log(" --> Interface " + fileName + " file was created: ");
         });
 
+        if (this.options.classDestination) {
+            this.mkdirSync(this.options.classDestination);
+            _.forEach(this.classDefinitions, (cd: IClassDefinition) => {
+                var fileName = this.options.classDestination + "/" + cd.fileName;
+                fs.writeFileSync(fileName, cd.fileContents);
+                console.log(" --> Class " + fileName + " file was created: ");
+            });
+        }
+
+        this.mkdirSync(this.options.clientDestination);
         var fileName = this.options.clientDestination + "/" + this.options.clientClassName + ".ts";
         fs.writeFileSync(fileName, clientCode);
         console.log(" --> " + fileName + " was created");

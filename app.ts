@@ -36,6 +36,10 @@ exports.process = (options) => {
                     opt.interfaceDestination = options.interfaceDestination;
                 }
 
+                if (options.classDestination) {
+                    opt.classDestination = options.classDestination;
+                }
+
                 if (options.modelModuleName) {
                     opt.modelModuleName = options.modelModuleName;
                 }
