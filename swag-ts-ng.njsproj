@@ -67,6 +67,7 @@
     <TypeScriptCompile Include="lib\Creators\clientCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\creatorHelper.ts" />
     <TypeScriptCompile Include="lib\Creators\deleteCreator.ts" />
+    <TypeScriptCompile Include="lib\Creators\documentationCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\interfaceCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\putCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\signatureCreator.ts" />

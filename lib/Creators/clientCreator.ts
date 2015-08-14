@@ -1,8 +1,9 @@
-﻿import _             = require("lodash");
-import deleteCreator = require("./deleteCreator");
-import getCreator    = require("./getCreator");
-import postCreator   = require("./postCreator");
-import putCreator    = require("./putCreator");
+﻿import _                    = require("lodash");
+import deleteCreator        = require("./deleteCreator");
+import documentationCreator = require("./documentationCreator");
+import getCreator           = require("./getCreator");
+import postCreator          = require("./postCreator");
+import putCreator           = require("./putCreator");
 
 class clientCreator {
     static create(options: ISwaggerOptions, signatureDefinitions: ISignatureDefinition[]): string {
@@ -69,14 +70,17 @@ class clientCreator {
                 // this means we have to create an overload for this signature
                 signatureText += "\n";
 
+                // get the signature with the most and least parameters, we will use it to create the implementation for this method
+                var signatureWithLeastParams = _.min<ISignatureDefinition>(signatures, "parameters.length");
+                var signatureWithMostParams = _.max<ISignatureDefinition>(signatures, "parameters.length");
+
+                // add documentation if any
+                signatureText += documentationCreator.create(signatureWithMostParams);
+
                 // loop through the signatures and create the overloads with no implementation
                 _.forEach(signatures, (s: ISignatureDefinition) => {
                     signatureText += "\t" + s.signature + "\n";
                 });
-
-                // get the signature with the most and least parameters, we will use it to create the implementation for this method
-                var signatureWithLeastParams = _.min<ISignatureDefinition>(signatures, "parameters.length");
-                var signatureWithMostParams = _.max<ISignatureDefinition>(signatures, "parameters.length");
 
                 // lets loop through the params of the signature with most parameters
                 var signatureImpText = "\t" + signatureWithMostParams.methodName + "(";
@@ -103,6 +107,8 @@ class clientCreator {
                 signatureImpText = signatureImpText.replace("[IMP]", impText);
                 signatureText = signatureText + signatureImpText + "\n";
             } else {
+                signatureText += "\n";
+                signatureText += documentationCreator.create(signatures[0]);
                 if (signatures[0].method == "delete") {
                     signatureText += deleteCreator.create(signatures[0]);
                 }

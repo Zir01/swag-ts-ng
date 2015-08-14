@@ -4,5 +4,5 @@
     methodName: string;
     parameters: IParamDefinition[];
     path: string;
-
+    summary?: string;
 }
