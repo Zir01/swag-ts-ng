@@ -67,6 +67,7 @@ class clientCreator {
 
             if (signatures.length > 1) {
                 // this means we have to create an overload for this signature
+                signatureText += "\n";
 
                 // loop through the signatures and create the overloads with no implementation
                 _.forEach(signatures, (s: ISignatureDefinition) => {
@@ -80,28 +81,27 @@ class clientCreator {
                 // lets loop through the params of the signature with most parameters
                 var signatureImpText = "\t" + signatureWithMostParams.methodName + "(";
                 _.forEach(signatureWithMostParams.parameters, (p: IParamDefinition, i: number) => {
-                    signatureImpText += "arg" + i.toString() + "?:any, ";
+                    signatureImpText += "arg" + i.toString() + "?: any, ";
                 });
                 signatureImpText = signatureImpText.substr(0, signatureImpText.length - 2);
                 signatureImpText += ") {\n[IMP]\n\t}";
 
                 var impText = "";
-                impText = "\t\tvar path='" + signatureWithLeastParams.path + "';\n\n";
+                impText = "\t\tvar path = this.host + \"" + signatureWithLeastParams.path + "\";\n\n";
 
                 // logic to create overload checks on parameters
                 _.forEach(signatureWithMostParams.parameters, (p: IParamDefinition, i: number) => {
                     var arg = "arg" + i.toString();
-                    impText += "\t\tif (" + arg + " && typeof (" + arg + ") === '" + p.type + "') {\n";
-                    impText += "\t\t\tpath += '/{" + arg + "}';\n"
-                    impText += "\t\t\tpath = path.replace('{" + arg + "}', " + arg + ".toString());\n"
+                    impText += "\t\tif (" + arg + " && typeof (" + arg + ") === \"" + p.type + "\") {\n";
+                    impText += "\t\t\tpath += \"/{" + arg + "}\";\n"
+                    impText += "\t\t\tpath = path.replace(\"{" + arg + "}\", " + arg + ".toString());\n"
                     impText += "\t\t}\n\n"
                 });
 
-                impText += "\t\tvar fullPath = this.host + path;\n";
-                impText += "\t\treturn this.httpGet(fullPath);\n";
+                impText += "\t\treturn this.httpGet(path);";
 
                 signatureImpText = signatureImpText.replace("[IMP]", impText);
-                signatureText = signatureText + signatureImpText + "\n\n";
+                signatureText = signatureText + signatureImpText + "\n";
             } else {
                 if (signatures[0].method == "delete") {
                     signatureText += deleteCreator.create(signatures[0]);
@@ -124,10 +124,11 @@ class clientCreator {
 
         if (options.clientModuleName) {
             template = template.replace(/^\t/gm, "\t\t");
-            template = "module " + options.clientModuleName + " {\n\texport " + template;
+            template = "/* tslint:disable:max-line-length */\n\nmodule " + options.clientModuleName + " {\n\t\"use strict\";\n\n\texport " + template;
             template += "\t}\n";
             template += "}\n";
         } else {
+            template = "/* tslint:disable:max-line-length */\n\n\"use strict\";\n\n" + template;
             template += "}\n";
             template += "\nexport = " + options.clientClassName + "\n";
         }
