@@ -2,7 +2,7 @@
 import http = require("http");
 
 
-http.get("http://bahrain/placemakerbuilderserver/swagger/docs/v1", (res) => {
+http.get("http://localhost:49250/swagger/docs/v1", (res) => {
     res.setEncoding('utf-8');
     var swaggerString = '';
     res.on('data', (data) => {
@@ -16,7 +16,9 @@ http.get("http://bahrain/placemakerbuilderserver/swagger/docs/v1", (res) => {
         var swaggerObject: Swagger.ISwagger = JSON.parse(swaggerString);
 
         var opt: ISwaggerOptions = {
-            destination: "app",
+            /*classDestination: "app/BuilderAPI",*/
+            clientDestination: "app/API/BuilderAPI",
+            interfaceDestination: "app/API/BuilderAPI",
             swaggerObject: swaggerObject
         };
         var swagSrv = new swaggerService(opt);

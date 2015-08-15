@@ -75,7 +75,7 @@ class SwaggerService {
     }
 
     private mkdirSync(dirpath: string): void {
-        var parts = dirpath.split(path.sep);
+        var parts = dirpath.split("/");
         for (var i = 1; i <= parts.length; i++) {
             var part = parts.slice(0, i);
             try {
