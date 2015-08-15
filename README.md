@@ -13,10 +13,27 @@ Swagger client Typescript Codegen for Angularjs
 
     var swag = require('swag-ts-ng');
 
-
     var options = {
-        swaggerPath: "your swagger definition here",
-        destination: "app", // your destination folder
-		moduleName: "MyModuleName" // optional
+        swaggerPath: "URL for your swagger definition", // required
+        interfaceDestination: "API/Interfaces",         // optional
+        classDestination: "API/Model",                  // optional
+        modelModuleName: "Model",                       // optional
+        clientDestination: "API/Service",               // optional
+        clientModuleName: "Service",                    // optional
+        clientClassName: "ApiDataService"               // optional
     }
+    
     swag.process(options);
+
+###Options
+
+| Field name          | Default                    | Description                                        |
+|---------------------|----------------------------|----------------------------------------------------|
+| swaggerPath         | none (required)            | URL of the Swagger document                        |
+| interfaceDestination| API/[Title from Swagger]   | Path for the interfaces                            |
+| classDestination    | none                       | If empty or missing, classes will not be generated |
+| modelModuleName     | API.[Title from Swagger]   | Module name for the interfaces                     |
+| clientDestination   | API/[Title from Swagger]   | Path for the client                                |
+| clientModuleName    | none                       | Module name for the client class                   |
+| clientClassName     | [Title from Swagger]Client | Class name for the client                          |
+

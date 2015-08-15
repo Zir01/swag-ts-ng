@@ -14,6 +14,7 @@ class signatureCreator {
                     var functionName: string = pathsObject[p][method].operationId;
                     var parameters: any[] = pathsObject[p][method].parameters;
                     var responses: any = pathsObject[p][method].responses;
+                    var summary: any = pathsObject[p][method].summary;
 
                     var signature: string = functionName;
                     var paramDefs: IParamDefinition[] = [];
@@ -50,6 +51,10 @@ class signatureCreator {
                         path: p,
                         method: method
                     };
+
+                    if (summary && summary.length > 0) {
+                        signatureDefinition.summary = summary;
+                    }
 
                     signatureDefinitions.push(signatureDefinition);
                 }

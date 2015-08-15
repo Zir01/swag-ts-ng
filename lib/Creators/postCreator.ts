@@ -3,7 +3,7 @@ import helper = require("./creatorHelper");
 
 class postCreator {
     static create(signature: ISignatureDefinition): string {
-        var result = "\n\t" + signature.signature.replace(";", " {") + "\n";
+        var result = "\t" + signature.signature.replace(";", " {") + "\n";
         result += helper.generatePathFromSignature(signature);
 
         // get the in body parameter

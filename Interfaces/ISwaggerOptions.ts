@@ -1,5 +1,9 @@
 ﻿interface ISwaggerOptions {
-    destination: string;
     swaggerObject: Swagger.ISwagger;
-    moduleName?: string
+    interfaceDestination?: string;
+    classDestination?: string;
+    modelModuleName?: string
+    clientDestination?: string;
+    clientModuleName?: string;
+    clientClassName?: string;
 }

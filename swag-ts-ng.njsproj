@@ -43,6 +43,7 @@
     <Content Include="package.json" />
     <Content Include="README.md" />
     <TypeScriptCompile Include="gulpfile.ts" />
+    <TypeScriptCompile Include="Interfaces\IClassDefinition.ts" />
     <TypeScriptCompile Include="Interfaces\IModelDefinition.ts" />
     <TypeScriptCompile Include="Interfaces\IParamDefinition.ts" />
     <TypeScriptCompile Include="Interfaces\ISignatureDefinition.ts" />
@@ -62,9 +63,11 @@
     <TypeScriptCompile Include="Interfaces\Swagger\IContact.ts" />
     <TypeScriptCompile Include="Interfaces\Swagger\IInfo.ts" />
     <TypeScriptCompile Include="Interfaces\Swagger\ISwagger.ts" />
+    <TypeScriptCompile Include="lib\Creators\classCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\clientCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\creatorHelper.ts" />
     <TypeScriptCompile Include="lib\Creators\deleteCreator.ts" />
+    <TypeScriptCompile Include="lib\Creators\documentationCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\interfaceCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\putCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\signatureCreator.ts" />
