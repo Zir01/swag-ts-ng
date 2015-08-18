@@ -41,7 +41,8 @@ class SwaggerService {
 
         // loop through paths and create Signature definitions to pass to the clientCreator creator
         console.log("Creating Function signatures from swagger.paths");
-        var signatureDefinitions: ISignatureDefinition[] = signatureCreator.create(modelDefinitions, this.options.swaggerObject.paths);
+        var modelPrefix = this.options.modelModuleName !== this.options.clientModuleName ? this.options.modelModuleName + "." : "";
+        var signatureDefinitions: ISignatureDefinition[] = signatureCreator.create(this.options.swaggerObject.paths, modelPrefix);
         console.log(" --> Created: " + signatureDefinitions.length + " signatures");
 
         // we have all we need in and signatureDefinitions[], now create the client code to access the API
@@ -49,26 +50,35 @@ class SwaggerService {
         var clientCode = clientCreator.create(this.options, signatureDefinitions);
 
         // done, now lets go ahead and create the code files
-        console.log("Writing interfaces to " + this.options.interfaceDestination);
-        this.mkdirSync(this.options.interfaceDestination);
-        _.forEach(interfaces, (cb: ICodeBlock) => {
-            var fileName = this.options.interfaceDestination + "/" + cb.name + ".ts";
-            fs.writeFileSync(fileName, cb.body);
-        });
-
-        if (this.options.classDestination) {
-            console.log("Writing classes to " + this.options.classDestination);
-            this.mkdirSync(this.options.classDestination);
-            _.forEach(classes, (cb: ICodeBlock) => {
-                var fileName = this.options.classDestination + "/" + cb.name + ".ts";
+        if (this.options.singleFile) {
+            var blocks: ICodeBlock[] = interfaces.concat(classes);
+            blocks.push(clientCode);
+            var code: string = "";
+            _.forEach(blocks, (cb: ICodeBlock) => { code += cb.body + "\n"; });
+            var fileName = this.options.clientDestination + "/" + this.options.clientClassName + ".ts";
+            fs.writeFileSync(fileName, code);
+        } else {
+            console.log("Writing interfaces to " + this.options.interfaceDestination);
+            this.mkdirSync(this.options.interfaceDestination);
+            _.forEach(interfaces, (cb: ICodeBlock) => {
+                var fileName = this.options.interfaceDestination + "/" + cb.name + ".ts";
                 fs.writeFileSync(fileName, cb.body);
             });
-        }
 
-        this.mkdirSync(this.options.clientDestination);
-        var fileName = this.options.clientDestination + "/" + this.options.clientClassName + ".ts";
-        console.log("Writing client class to " + fileName);
-        fs.writeFileSync(fileName, clientCode.body);
+            if (this.options.classDestination) {
+                console.log("Writing classes to " + this.options.classDestination);
+                this.mkdirSync(this.options.classDestination);
+                _.forEach(classes, (cb: ICodeBlock) => {
+                    var fileName = this.options.classDestination + "/" + cb.name + ".ts";
+                    fs.writeFileSync(fileName, cb.body);
+                });
+            }
+
+            this.mkdirSync(this.options.clientDestination);
+            var fileName = this.options.clientDestination + "/" + this.options.clientClassName + ".ts";
+            console.log("Writing client class to " + fileName);
+            fs.writeFileSync(fileName, clientCode.body);
+        }
     }
 
     private mkdirSync(dirpath: string): void {

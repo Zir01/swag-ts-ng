@@ -1,8 +1,8 @@
 ﻿import typeParser = require("./typeParser");
 
 class parameterParser {
-    static parse(modelDefinitions: IModelDefinition[], property): IParamDefinition {
-        var dataType = typeParser.parse(property);
+    static parse(property, modelPrefix: string): IParamDefinition {
+        var dataType = typeParser.parse(property, modelPrefix);
 
         var paramType: ParamType;
         switch (property.in) {

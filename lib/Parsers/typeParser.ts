@@ -1,13 +1,14 @@
 ﻿import _ = require("lodash");
 
 class typeParser {
-    static parse(property): string {
+    static parse(property, modelPrefix?: string): string {
         if (property.schema) {
-            return this.parse(property.schema);
+            return this.parse(property.schema, modelPrefix);
         }
 
         if (property.$ref) {
-            return property.$ref.replace("#/definitions/", "I");
+            var prefix: string = modelPrefix || "";
+            return property.$ref.replace("#/definitions/", prefix + "I");
         }
 
         switch (property.type) {

@@ -75,7 +75,6 @@
     <TypeScriptCompile Include="lib\Creators\postCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\getCreator.ts" />
     <TypeScriptCompile Include="lib\Parsers\modelParser.ts" />
-    <TypeScriptCompile Include="lib\Parsers\responseParser.ts" />
     <TypeScriptCompile Include="lib\Parsers\parameterParser.ts" />
     <TypeScriptCompile Include="lib\Parsers\typeParser.ts" />
     <TypeScriptCompile Include="lib\SwaggerService.ts" />
