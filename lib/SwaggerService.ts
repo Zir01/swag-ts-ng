@@ -1,20 +1,14 @@
 ﻿import fs               = require("fs");
 import path             = require("path");
 import _                = require("lodash");
+import modelParser      = require("./Parsers/modelParser");
 import signatureCreator = require("./Creators/signatureCreator");
 import interfaceCreator = require("./Creators/interfaceCreator");
 import classCreator     = require("./Creators/classCreator");
 import clientCreator    = require("./Creators/clientCreator");
 
 class SwaggerService {
-    modelDefinitions: IModelDefinition[];
-    signatureDefinitions: ISignatureDefinition[];
-    classDefinitions: IClassDefinition[];
-
     constructor(public options: ISwaggerOptions) {
-        this.modelDefinitions = [];
-        this.signatureDefinitions = [];
-
         if (!this.options.interfaceDestination) {
             options.interfaceDestination = "API/" + this.options.swaggerObject.info.title;
         }
@@ -33,45 +27,48 @@ class SwaggerService {
     }
 
     public process() {
-        console.log('Starting Parse!');
+        // parse model
+        console.log('Parsing models');
+        var modelDefinitions: IModelDefinition[] = modelParser.parse(this.options.swaggerObject.definitions, this.options.modelModuleName);
+        console.log(" --> Created: " + modelDefinitions.length + " models");
 
         // loop through definitions
-        console.log("Creating Interfaces from swagger.definitions");
-        this.modelDefinitions = interfaceCreator.create(this.options.swaggerObject.definitions, this.options.modelModuleName);
+        console.log("Creating model interfaces");
+        var interfaces: ICodeBlock[] = interfaceCreator.create(modelDefinitions, this.options.modelModuleName);
 
-        console.log("Creating Classes from swagger.definitions");
-        this.classDefinitions = classCreator.create(this.options.swaggerObject.definitions, this.modelDefinitions, this.options.modelModuleName);
+        console.log("Creating model classes");
+        var classes: ICodeBlock[] = classCreator.create(modelDefinitions, this.options.modelModuleName);
 
         // loop through paths and create Signature definitions to pass to the clientCreator creator
         console.log("Creating Function signatures from swagger.paths");
-        this.signatureDefinitions = signatureCreator.create(this.modelDefinitions, this.options.swaggerObject.paths);
-        console.log(" --> Signatures created: " + this.signatureDefinitions.length + " signatures created");
+        var signatureDefinitions: ISignatureDefinition[] = signatureCreator.create(modelDefinitions, this.options.swaggerObject.paths);
+        console.log(" --> Created: " + signatureDefinitions.length + " signatures");
 
         // we have all we need in and signatureDefinitions[], now create the client code to access the API
-        console.log("Creating client class:");
-        var clientCode = clientCreator.create(this.options, this.signatureDefinitions);
+        console.log("Creating client classes");
+        var clientCode = clientCreator.create(this.options, signatureDefinitions);
 
         // done, now lets go ahead and create the code files
+        console.log("Writing interfaces to " + this.options.interfaceDestination);
         this.mkdirSync(this.options.interfaceDestination);
-        _.forEach(this.modelDefinitions, (md: IModelDefinition) => {
-            var fileName = this.options.interfaceDestination + "/" + md.fileName;
-            fs.writeFileSync(fileName, md.fileContents);
-            console.log(" --> Interface " + fileName + " file was created: ");
+        _.forEach(interfaces, (cb: ICodeBlock) => {
+            var fileName = this.options.interfaceDestination + "/" + cb.name + ".ts";
+            fs.writeFileSync(fileName, cb.body);
         });
 
         if (this.options.classDestination) {
+            console.log("Writing classes to " + this.options.classDestination);
             this.mkdirSync(this.options.classDestination);
-            _.forEach(this.classDefinitions, (cd: IClassDefinition) => {
-                var fileName = this.options.classDestination + "/" + cd.fileName;
-                fs.writeFileSync(fileName, cd.fileContents);
-                console.log(" --> Class " + fileName + " file was created: ");
+            _.forEach(classes, (cb: ICodeBlock) => {
+                var fileName = this.options.classDestination + "/" + cb.name + ".ts";
+                fs.writeFileSync(fileName, cb.body);
             });
         }
 
         this.mkdirSync(this.options.clientDestination);
         var fileName = this.options.clientDestination + "/" + this.options.clientClassName + ".ts";
-        fs.writeFileSync(fileName, clientCode);
-        console.log(" --> " + fileName + " was created");
+        console.log("Writing client class to " + fileName);
+        fs.writeFileSync(fileName, clientCode.body);
     }
 
     private mkdirSync(dirpath: string): void {

@@ -1,31 +1,33 @@
 ﻿import typeParser = require("../Parsers/typeParser");
 
 class classCreator {
-    static create(swaggerDefinitions, modelDefinitions: IModelDefinition[], modelModuleName: string): IClassDefinition[] {
-        var classDefinitions: IClassDefinition[] = [];
+    static create(models: IModelDefinition[], moduleName: string): ICodeBlock[] {
+        var blocks: ICodeBlock[] = [];
 
-        for (var p in swaggerDefinitions) {
-            var name = p;
-            var definition = swaggerDefinitions[p];
-
-            var fileContents = "module " + modelModuleName + " {\n"
-            fileContents += "\t\"use strict\";\n\n";
-            fileContents += "\texport class " + name + " implements I" + name + " {\n";
-            for (var p in definition.properties) {
-                fileContents += "\t\t" + p + ": " + typeParser.parse(modelDefinitions, definition.properties[p]) + ";\n";
+        for (var i = 0; i < models.length; i++) {
+            var model: IModelDefinition = models[i];
+            var body = "module " + moduleName + " {\n"
+            body += "\t\"use strict\";\n\n";
+            body += "\texport class " + model.name + " implements I" + model.name + " {\n";
+            for (var j = 0; j < model.properties.length; j++) {
+                var property: IPropertyDefinition = model.properties[j];
+                body += "\t\t" + property.name + ": " + property.dataType + ";\n";
             }
 
-            fileContents += "\t}\n";
-            fileContents += "}\n";
-            var modelDef: IClassDefinition = {
-                fileName: name + ".ts",
-                fileContents: fileContents
-            };
+            body += "\t}\n";
+            body += "}\n";
 
-            classDefinitions.push(modelDef);
+            var block: ICodeBlock = {
+                codeType: CodeBlockType.ModelClass,
+                moduleName: moduleName,
+                name: model.name,
+                body: body
+            }
+
+            blocks.push(block);
         }
 
-        return classDefinitions;
+        return blocks;
     }
 }
 

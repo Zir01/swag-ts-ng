@@ -6,7 +6,7 @@ import postCreator          = require("./postCreator");
 import putCreator           = require("./putCreator");
 
 class clientCreator {
-    static create(options: ISwaggerOptions, signatureDefinitions: ISignatureDefinition[]): string {
+    static create(options: ISwaggerOptions, signatureDefinitions: ISignatureDefinition[]): ICodeBlock {
         var template: string = "";
         template += "class " + options.clientClassName + " {\n";
         template += "\tprivate http: ng.IHttpService;\n";
@@ -96,7 +96,7 @@ class clientCreator {
                 // logic to create overload checks on parameters
                 _.forEach(signatureWithMostParams.parameters, (p: IParamDefinition, i: number) => {
                     var arg = "arg" + i.toString();
-                    impText += "\t\tif (" + arg + " && typeof (" + arg + ") === \"" + p.type + "\") {\n";
+                    impText += "\t\tif (" + arg + " && typeof (" + arg + ") === \"" + p.dataType + "\") {\n";
                     impText += "\t\t\tpath += \"/{" + arg + "}\";\n"
                     impText += "\t\t\tpath = path.replace(\"{" + arg + "}\", " + arg + ".toString());\n"
                     impText += "\t\t}\n\n"
@@ -139,10 +139,14 @@ class clientCreator {
             template += "\nexport = " + options.clientClassName + "\n";
         }
 
-        return template;
+        var result: ICodeBlock = {
+            codeType: CodeBlockType.ClientClass,
+            moduleName: options.clientModuleName,
+            name: options.clientClassName,
+            body: template
+        }
 
-        //fs.writeFileSync(this.destPath + "/" + this.swaggerObject.info.title + "/" + this.swaggerObject.info.title + "Client.ts", template);
-        //console.log(" --> " + this.destPath + "/" + this.swaggerObject.info.title + "/" + this.swaggerObject.info.title + "Client.ts was created");
+        return result;
     }
 }
 

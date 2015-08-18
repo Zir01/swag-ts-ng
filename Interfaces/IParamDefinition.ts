@@ -1,9 +1,11 @@
-﻿interface IParamDefinition {
+﻿const enum ParamType { Query, Header, Path, FormData, Body }
+
+interface IParamDefinition {
     name: string;
-    type: string;
+    paramType: ParamType;
+    dataType: string;
     required: boolean;
     text: string;
-    i_n: string;
     items: any;
     description?: string;
 }

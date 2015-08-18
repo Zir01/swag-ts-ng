@@ -43,9 +43,10 @@
     <Content Include="package.json" />
     <Content Include="README.md" />
     <TypeScriptCompile Include="gulpfile.ts" />
-    <TypeScriptCompile Include="Interfaces\IClassDefinition.ts" />
+    <TypeScriptCompile Include="Interfaces\ICodeBlock.ts" />
     <TypeScriptCompile Include="Interfaces\IModelDefinition.ts" />
     <TypeScriptCompile Include="Interfaces\IParamDefinition.ts" />
+    <TypeScriptCompile Include="Interfaces\IPropertyDefinition.ts" />
     <TypeScriptCompile Include="Interfaces\ISignatureDefinition.ts" />
     <TypeScriptCompile Include="Interfaces\ISwaggerOptions.ts" />
     <TypeScriptCompile Include="Interfaces\Swagger\ISecurityScheme.ts" />
@@ -73,6 +74,7 @@
     <TypeScriptCompile Include="lib\Creators\signatureCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\postCreator.ts" />
     <TypeScriptCompile Include="lib\Creators\getCreator.ts" />
+    <TypeScriptCompile Include="lib\Parsers\modelParser.ts" />
     <TypeScriptCompile Include="lib\Parsers\responseParser.ts" />
     <TypeScriptCompile Include="lib\Parsers\parameterParser.ts" />
     <TypeScriptCompile Include="lib\Parsers\typeParser.ts" />
