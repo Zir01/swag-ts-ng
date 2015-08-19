@@ -74,7 +74,7 @@ class SwaggerService {
             var code = "/* tslint:disable:max-line-length */\n\n";
             if (this.options.clientModuleName) {
                 code += "module " + this.options.clientModuleName + " {\n";
-                code += "\t\"use strict;\"\n\n";
+                code += "\t\"use strict\";\n\n";
                 code += clientCode.body + "}\n\n";
             } else {
                 code += clientCode.body;
@@ -91,7 +91,7 @@ class SwaggerService {
         _.forEach(blocks, (cb: ICodeBlock) => {
             var fileName = destination + "/" + cb.name + ".ts";
             var code = "module " + cb.moduleName + " {\n";
-            code += "\t\"use strict;\"\n\n";
+            code += "\t\"use strict\";\n\n";
             code += cb.body + "}\n\n";
             fs.writeFileSync(fileName, code);
         });
@@ -103,7 +103,7 @@ class SwaggerService {
         _.forEach(modules, (m: ICodeBlock[]) => {
             if (m[0].moduleName) {
                 code += "module " + m[0].moduleName + " {\n";
-                code += "\t\"use strict;\"\n";
+                code += "\t\"use strict\";\n";
                 _.forEach(m, (cb: ICodeBlock) => { code += "\n" + cb.body; });
                 code += "}\n\n";
             } else {
