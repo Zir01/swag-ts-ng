@@ -6,8 +6,7 @@ class interfaceCreator {
 
         for (var i = 0; i < models.length; i++) {
             var model: IModelDefinition = models[i];
-            var body = "module " + moduleName + " {\n"
-            body += "\t\"use strict\";\n\n";
+            var body = "";
             body += "\texport interface I" + model.name + " {\n";
             for (var j = 0; j < model.properties.length; j++) {
                 var property: IPropertyDefinition = model.properties[j];
@@ -15,7 +14,6 @@ class interfaceCreator {
             }
 
             body += "\t}\n";
-            body += "}\n";
 
             var block: ICodeBlock = {
                 codeType: CodeBlockType.ModelInterface,

@@ -41,44 +41,78 @@ class SwaggerService {
 
         // loop through paths and create Signature definitions to pass to the clientCreator creator
         console.log("Creating Function signatures from swagger.paths");
-        var modelPrefix = this.options.modelModuleName !== this.options.clientModuleName ? this.options.modelModuleName + "." : "";
+        var modelPrefix: string = this.options.modelModuleName !== this.options.clientModuleName ? this.options.modelModuleName + "." : "";
         var signatureDefinitions: ISignatureDefinition[] = signatureCreator.create(this.options.swaggerObject.paths, modelPrefix);
         console.log(" --> Created: " + signatureDefinitions.length + " signatures");
 
-        // we have all we need in and signatureDefinitions[], now create the client code to access the API
+        // we have all we need, now create the client code to access the API
         console.log("Creating client classes");
-        var clientCode = clientCreator.create(this.options, signatureDefinitions);
+        var clientCode: ICodeBlock = clientCreator.create(this.options, signatureDefinitions);
 
         // done, now lets go ahead and create the code files
+        var blocks: ICodeBlock[] = interfaces;
+        if (this.options.classDestination) {
+            blocks = blocks.concat(classes);
+        }
+
+        blocks.push(clientCode);
+
         if (this.options.singleFile) {
-            var blocks: ICodeBlock[] = interfaces.concat(classes);
-            blocks.push(clientCode);
-            var code: string = "";
-            _.forEach(blocks, (cb: ICodeBlock) => { code += cb.body + "\n"; });
-            var fileName = this.options.clientDestination + "/" + this.options.clientClassName + ".ts";
-            fs.writeFileSync(fileName, code);
+            this.writeSingleFile(blocks);
         } else {
             console.log("Writing interfaces to " + this.options.interfaceDestination);
-            this.mkdirSync(this.options.interfaceDestination);
-            _.forEach(interfaces, (cb: ICodeBlock) => {
-                var fileName = this.options.interfaceDestination + "/" + cb.name + ".ts";
-                fs.writeFileSync(fileName, cb.body);
-            });
+            this.writeMultipleFiles(interfaces, this.options.interfaceDestination);
 
             if (this.options.classDestination) {
                 console.log("Writing classes to " + this.options.classDestination);
-                this.mkdirSync(this.options.classDestination);
-                _.forEach(classes, (cb: ICodeBlock) => {
-                    var fileName = this.options.classDestination + "/" + cb.name + ".ts";
-                    fs.writeFileSync(fileName, cb.body);
-                });
+                this.writeMultipleFiles(classes, this.options.classDestination);
             }
 
             this.mkdirSync(this.options.clientDestination);
             var fileName = this.options.clientDestination + "/" + this.options.clientClassName + ".ts";
             console.log("Writing client class to " + fileName);
-            fs.writeFileSync(fileName, clientCode.body);
+            var code = "/* tslint:disable:max-line-length */\n\n";
+            if (this.options.clientModuleName) {
+                code += "module " + this.options.clientModuleName + " {\n";
+                code += "\t\"use strict;\"\n\n";
+                code += clientCode.body + "}\n\n";
+            } else {
+                code += clientCode.body;
+            }
+
+            fs.writeFileSync(fileName, code);
         }
+
+        console.log("Done!");
+    }
+
+    private writeMultipleFiles(blocks: ICodeBlock[], destination: string): void {
+        this.mkdirSync(destination);
+        _.forEach(blocks, (cb: ICodeBlock) => {
+            var fileName = destination + "/" + cb.name + ".ts";
+            var code = "module " + cb.moduleName + " {\n";
+            code += "\t\"use strict;\"\n\n";
+            code += cb.body + "}\n\n";
+            fs.writeFileSync(fileName, code);
+        });
+    }
+
+    private writeSingleFile(blocks: ICodeBlock[]): void {
+        var code = "/* tslint:disable:max-line-length */\n\n";
+        var modules = _.groupBy(blocks, (b: ICodeBlock) => { return b.moduleName; });
+        _.forEach(modules, (m: ICodeBlock[]) => {
+            if (m[0].moduleName) {
+                code += "module " + m[0].moduleName + " {\n";
+                code += "\t\"use strict;\"\n";
+                _.forEach(m, (cb: ICodeBlock) => { code += "\n" + cb.body; });
+                code += "}\n\n";
+            } else {
+                _.forEach(m, (cb: ICodeBlock) => { code += cb.body + "\n"; });
+            }
+        });
+
+        var fileName = this.options.clientDestination + "/" + this.options.clientClassName + ".ts";
+        fs.writeFileSync(fileName, code);
     }
 
     private mkdirSync(dirpath: string): void {
