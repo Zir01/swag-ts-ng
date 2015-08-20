@@ -1,44 +1,45 @@
-﻿import _            = require("lodash");
-import typeParser   = require("./typeParser");
+﻿import typeParser = require("./typeParser");
 
 class parameterParser {
-    static parse(modelDefinitions: IModelDefinition[], property): IParamDefinition {
+    static parse(property, modelPrefix: string): IParamDefinition {
+        var dataType = typeParser.parse(property, modelPrefix);
+
+        var paramType: ParamType;
+        switch (property.in) {
+            case "query":
+                paramType = ParamType.Query;
+                break;
+            case "header":
+                paramType = ParamType.Header;
+                console.warn("Parameter type header is not supported");
+                break;
+            case "path":
+                paramType = ParamType.Path;
+                break;
+            case "formData":
+                paramType = ParamType.FormData;
+                console.warn("Parameter type formData is not supported");
+                break;
+            case "body":
+                paramType = ParamType.Body;
+                break;
+            default:
+                console.error("Unknown parameter.in: " + property.in);
+        }
+
         var paramDef: string = property.name;
-        var dataType = typeParser.parse(modelDefinitions, property);
         if (!property.required) {
             paramDef += "?";
         }
 
-        if (property.type) {
-            if (property.type != "array") {
-                paramDef += ": " + dataType;
-            } else {
-                dataType = "array";
-                var innertype = typeParser.parse(modelDefinitions, property.items);
-                paramDef += ": " + innertype + "[]";
-            }
-        } else if (property.schema) {
-            if (property.schema.type) {
-                if (property.schema.type != "array") {
-                    paramDef += ": " + property.schema.type;
-                    dataType = property.schema.type;
-                } else {
-                    var dataType = _.find(modelDefinitions, (md: IModelDefinition) => { return md.definitionName == property.schema.items.$ref; }).interfaceName;
-                    paramDef += ": " + dataType + "[]";
-                    dataType = property.schema.type;
-                }
-            } else {
-                var dataType = _.find(modelDefinitions, (md: IModelDefinition) => { return md.definitionName == property.schema.$ref; }).interfaceName;
-                paramDef += ": " + dataType;
-            }
-        }
+        paramDef += ": " + dataType;
 
         var result: IParamDefinition = {
             name: property.name,
+            paramType: paramType,
             required: property.required,
-            i_n: property.in,
             items: property.items,
-            type: dataType,
+            dataType: dataType,
             text: paramDef
         };
 

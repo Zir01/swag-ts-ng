@@ -1,33 +1,31 @@
 ﻿import typeParser = require("../Parsers/typeParser");
 
 class interfaceCreator {
-    static create(definitions, apiModuleName: string): IModelDefinition[] {
-        var modelDefinitions: IModelDefinition[] = [];
+    static create(models: IModelDefinition[], moduleName: string): ICodeBlock[] {
+        var blocks: ICodeBlock[] = [];
 
-        for (var p in definitions) {
-            var name = p;
-            var definition = definitions[p];
-
-            var fileContents = "module " + apiModuleName + " {\n"
-            fileContents += "\t\"use strict\";\n\n";
-            fileContents += "\texport interface I" + name + " {\n";
-            for (var p in definition.properties) {
-                fileContents += "\t\t" + p + ": " + typeParser.parse(modelDefinitions, definition.properties[p]) + ";\n";
+        for (var i = 0; i < models.length; i++) {
+            var model: IModelDefinition = models[i];
+            var body = "";
+            body += "\texport interface I" + model.name + " {\n";
+            for (var j = 0; j < model.properties.length; j++) {
+                var property: IPropertyDefinition = model.properties[j];
+                body += "\t\t" + property.name + ": " + property.dataType + ";\n";
             }
 
-            fileContents += "\t}\n";
-            fileContents += "}\n";
-            var modelDef: IModelDefinition = {
-                definitionName: "#/definitions/" + name,
-                interfaceName: apiModuleName + ".I" + name,
-                fileName: "I" + name + ".ts",
-                fileContents: fileContents
-            };
+            body += "\t}\n";
 
-            modelDefinitions.push(modelDef);
+            var block: ICodeBlock = {
+                codeType: CodeBlockType.ModelInterface,
+                moduleName: moduleName,
+                name: "I" + model.name,
+                body: body
+            }
+
+            blocks.push(block);
         }
 
-        return modelDefinitions;
+        return blocks;
     }
 }
 

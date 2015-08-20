@@ -1,11 +1,10 @@
 ﻿import _                = require("lodash");
 import parameterParser  = require("../Parsers/parameterParser");
-import responseParser   = require("../Parsers/responseParser");
+import typeParser       = require("../Parsers/typeParser");
 
 class signatureCreator {
-    static create(modelDefinitions, pathsObject): ISignatureDefinition[]{
-
-        var signatureDefinitions:ISignatureDefinition[] = [];
+    static create(pathsObject, modelPrefix: string): ISignatureDefinition[] {
+        var signatureDefinitions: ISignatureDefinition[] = [];
 
         for (var p in pathsObject) {
             // loop through the METHODS of the path
@@ -21,7 +20,7 @@ class signatureCreator {
                     if (parameters && parameters.length > 0) {
                         signature += "(";
                         _.forEach(parameters, (param) => {
-                            var paramDef = parameterParser.parse(modelDefinitions, param);
+                            var paramDef = parameterParser.parse(param, modelPrefix);
                             paramDefs.push(paramDef);
                             signature += paramDef.text + ", ";
                         });
@@ -34,7 +33,7 @@ class signatureCreator {
                     var responseFound: boolean = false;
                     for (var r in responses) {
                         if (r == "200") {
-                            var responseType: string = responseParser.parse(modelDefinitions, responses[r]);
+                            var responseType: string = typeParser.parse(responses[r], modelPrefix);
                             signature += ": ng.IPromise<" + responseType + ">;"
                             responseFound = true;
                         }
@@ -64,4 +63,5 @@ class signatureCreator {
         return signatureDefinitions;
     }
 }
+
 export = signatureCreator;

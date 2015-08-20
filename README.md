@@ -20,7 +20,8 @@ Swagger client Typescript Codegen for Angularjs
         modelModuleName: "Model",                       // optional
         clientDestination: "API/Service",               // optional
         clientModuleName: "Service",                    // optional
-        clientClassName: "ApiDataService"               // optional
+        clientClassName: "ApiDataService",              // optional
+        singleFile: false                               // optional
     }
     
     swag.process(options);
@@ -36,4 +37,4 @@ Swagger client Typescript Codegen for Angularjs
 | clientDestination   | API/[Title from Swagger]   | Path for the client                                |
 | clientModuleName    | none                       | Module name for the client class                   |
 | clientClassName     | [Title from Swagger]Client | Class name for the client                          |
-
+| singleFile          | false                      | Put all the generated code in a single file        |

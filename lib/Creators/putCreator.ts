@@ -8,7 +8,7 @@ class putCreator {
 
         // get the in body parameter
         var bodyparam = _.find(signature.parameters, (p: IParamDefinition) => {
-            return p.i_n == "body";
+            return p.paramType == ParamType.Body;
         });
 
         if (bodyparam) {

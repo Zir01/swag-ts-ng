@@ -1,19 +1,19 @@
 ﻿import _ = require("lodash");
+
 class typeParser {
-    static parse(modelDefinitions: IModelDefinition[], property): string {
-        if (!property.type) {
-            // check $ref;
-            if (property.$ref) {
-                return property.$ref.replace("#/definitions/", "I");
-            }
-            if (property.schema.$ref) {
-                return _.find(modelDefinitions, (md: IModelDefinition) => { return md.definitionName == property.schema.$ref; }).interfaceName;
-            }
+    static parse(property, modelPrefix?: string): string {
+        if (property.schema) {
+            return this.parse(property.schema, modelPrefix);
+        }
+
+        if (property.$ref) {
+            var prefix: string = modelPrefix || "";
+            return property.$ref.replace("#/definitions/", prefix + "I");
         }
 
         switch (property.type) {
             case "array":
-                return this.parse(modelDefinitions, property.items) + "[]";
+                return this.parse(property.items, modelPrefix) + "[]";
             case "boolean":
                 return "boolean";
             case "integer":
@@ -28,8 +28,9 @@ class typeParser {
                 return "string";
         }
 
-        console.log("Warning: Unknown data type '" + property.type + "'");
+        console.warn("Warning: Unknown data type '" + property.type + "'");
         return property.type;
     }
 }
+
 export = typeParser;

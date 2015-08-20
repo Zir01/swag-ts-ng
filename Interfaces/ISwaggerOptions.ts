@@ -6,4 +6,5 @@
     clientDestination?: string;
     clientModuleName?: string;
     clientClassName?: string;
+    singleFile?: boolean;
 }

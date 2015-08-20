@@ -3,17 +3,16 @@
 class creatorHelper {
     static generatePathFromSignature(signature: ISignatureDefinition): string {
         var result = "\t\tvar path = this.host + \"" + signature.path + "\";\n";
-
-        // logic to create overload checks on parameters
         var query = "";
         var queryCnt = 0;
+
         _.forEach(signature.parameters, (p: IParamDefinition, i: number) => {
-            if (p.i_n == "path") {
+            if (p.paramType == ParamType.Path) {
                 result += "\t\tpath = path.replace(\"{" + p.name.trim() + "}\", " + p.name + ".toString());\n";
             }
 
-            if (p.i_n == "query") {
-                if (p.type != "array") {
+            if (p.paramType == ParamType.Query) {
+                if (p.dataType != "array") {
                     if (queryCnt == 0) {
                         query += "\t\tpath += \"?" + p.name + "=\" + " + p.name + ";\n";
                     } else {

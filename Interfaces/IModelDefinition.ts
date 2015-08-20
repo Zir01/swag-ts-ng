@@ -1,9 +1,6 @@
 ﻿interface IModelDefinition {
-
-    fileName: string;
+    moduleName: string;
     definitionName: string;
-    interfaceName: string;
-    fileContents: string;
-    
-
+    name: string;
+    properties: IPropertyDefinition[];
 }
