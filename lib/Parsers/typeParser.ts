@@ -7,6 +7,11 @@ class typeParser {
         }
 
         if (property.$ref) {
+
+            if (property.$ref == "Object")
+                return "any";
+
+
             var prefix: string = modelPrefix || "";
             return property.$ref.replace("#/definitions/", prefix + "I");
         }
