@@ -1,9 +1,9 @@
 ﻿import _ = require("lodash");
 
 class typeParser {
-    static parse(property, modelPrefix?: string): string {
+    static parse(options: ISwaggerOptions, property, modelPrefix?: string): string {
         if (property.schema) {
-            return this.parse(property.schema, modelPrefix);
+            return this.parse(options, property.schema, modelPrefix);
         }
 
         if (property.$ref) {
@@ -11,14 +11,23 @@ class typeParser {
             if (property.$ref == "Object")
                 return "any";
 
-
+            
             var prefix: string = modelPrefix || "";
-            return property.$ref.replace("#/definitions/", prefix + "I");
+            var res = property.$ref.replace("#/definitions/", "");
+            res = prefix + res;
+
+            var moduleName: string = "";
+            if (options.modelModuleName)
+                moduleName = options.modelModuleName + ".";
+
+
+
+            return moduleName + res;
         }
 
         switch (property.type) {
             case "array":
-                return this.parse(property.items, modelPrefix) + "[]";
+                return this.parse(options, property.items, modelPrefix) + "[]";
             case "boolean":
                 return "boolean";
             case "integer":

@@ -29,7 +29,7 @@ class SwaggerService {
     public process() {
         // parse model
         console.log('Parsing models');
-        var modelDefinitions: IModelDefinition[] = modelParser.parse(this.options.swaggerObject.definitions, this.options.modelModuleName);
+        var modelDefinitions: IModelDefinition[] = modelParser.parse(this.options, this.options.swaggerObject.definitions, this.options.modelModuleName);
         console.log(" --> Created: " + modelDefinitions.length + " models");
 
         // loop through definitions
@@ -42,7 +42,7 @@ class SwaggerService {
         // loop through paths and create Signature definitions to pass to the clientCreator creator
         console.log("Creating Function signatures from swagger.paths");
         var modelPrefix: string = this.options.modelModuleName !== this.options.clientModuleName ? this.options.modelModuleName + "." : "";
-        var signatureDefinitions: ISignatureDefinition[] = signatureCreator.create(this.options.swaggerObject.paths, modelPrefix);
+        var signatureDefinitions: ISignatureDefinition[] = signatureCreator.create(this.options, this.options.swaggerObject.paths, modelPrefix);
         console.log(" --> Created: " + signatureDefinitions.length + " signatures");
 
         // we have all we need, now create the client code to access the API

@@ -1,7 +1,7 @@
 ﻿import typeParser = require("../Parsers/typeParser");
 
 class modelParser {
-    static parse(swaggerDefinitions: any, moduleName: string): IModelDefinition[] {
+    static parse(options: ISwaggerOptions, swaggerDefinitions: any, moduleName: string): IModelDefinition[] {
         var models: IModelDefinition[] = [];
 
         for (var d in swaggerDefinitions) {
@@ -12,7 +12,7 @@ class modelParser {
             for (var p in definition.properties) {
                 var property: IPropertyDefinition = {
                     name: p,
-                    dataType: typeParser.parse(definition.properties[p])
+                    dataType: typeParser.parse(options, definition.properties[p], "I")
                 };
 
                 properties.push(property);

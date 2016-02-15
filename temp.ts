@@ -16,9 +16,9 @@ http.get("http://localhost:49250/swagger/docs/v1", (res) => {
         var swaggerObject: Swagger.ISwagger = JSON.parse(swaggerString);
 
         var opt: ISwaggerOptions = {
-            /*classDestination: "app/BuilderAPI",*/
             clientDestination: "app/API/BuilderAPI",
-            interfaceDestination: "app/API/BuilderAPI",
+            interfaceDestination: "app/API/Interfaces",
+            classDestination: "app/API/Model",
             swaggerObject: swaggerObject
         };
         var swagSrv = new swaggerService(opt);

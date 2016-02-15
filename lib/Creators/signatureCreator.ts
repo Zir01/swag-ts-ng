@@ -3,7 +3,7 @@ import parameterParser  = require("../Parsers/parameterParser");
 import typeParser       = require("../Parsers/typeParser");
 
 class signatureCreator {
-    static create(pathsObject, modelPrefix: string): ISignatureDefinition[] {
+    static create(options: ISwaggerOptions, pathsObject, modelPrefix: string): ISignatureDefinition[] {
         var signatureDefinitions: ISignatureDefinition[] = [];
 
         for (var p in pathsObject) {
@@ -20,7 +20,7 @@ class signatureCreator {
                     if (parameters && parameters.length > 0) {
                         signature += "(";
                         _.forEach(parameters, (param) => {
-                            var paramDef = parameterParser.parse(param, modelPrefix);
+                            var paramDef = parameterParser.parse(options, param, "I");
                             paramDefs.push(paramDef);
                             signature += paramDef.text + ", ";
                         });
@@ -33,7 +33,7 @@ class signatureCreator {
                     var responseFound: boolean = false;
                     for (var r in responses) {
                         if (r == "200") {
-                            var responseType: string = typeParser.parse(responses[r], modelPrefix);
+                            var responseType: string = typeParser.parse(options, responses[r], "I");
                             signature += ": ng.IPromise<" + responseType + ">;"
                             responseFound = true;
                         }

@@ -1,8 +1,8 @@
 ﻿import typeParser = require("./typeParser");
 
 class parameterParser {
-    static parse(property, modelPrefix: string): IParamDefinition {
-        var dataType = typeParser.parse(property, modelPrefix);
+    static parse(options: ISwaggerOptions, property, modelPrefix: string): IParamDefinition {
+        var dataType = typeParser.parse(options, property, modelPrefix);
 
         var paramType: ParamType;
         switch (property.in) {
@@ -31,7 +31,6 @@ class parameterParser {
         if (!property.required) {
             paramDef += "?";
         }
-
         paramDef += ": " + dataType;
 
         var result: IParamDefinition = {
