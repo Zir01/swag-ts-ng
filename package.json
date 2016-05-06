@@ -7,7 +7,7 @@
     "name": "zeroone"
   },
   "scripts": {
-    "build": "gulp build",
+    "build": "ts-node ./node_modules/.bin/gulp build",
     "postinstall": "npm run build"
   },
   "repository": {
@@ -30,6 +30,7 @@
     "gulp-util": "^3.0.7",
     "merge2": "^1.0.2",
     "node-notifier": "^4.5.0",
+    "ts-node": "^0.7.2",
     "typescript": "^1.8.10"
   }
 }

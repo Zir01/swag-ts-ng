@@ -15,18 +15,18 @@ var tsProject = ts.createProject('tsconfig.json',{
   typescript: require('typescript')
 });
 
-var lastTsErrorMsg = null;
+var lastTsErrorMsg:string = null;
 var errorCount = 0;
 //regex taken from: https://github.com/chalk/ansi-regex/blob/master/index.js#L3
-//need to remove these characters, because otherwise we end up with garbled messaged for non-terminal notifications 
+//need to remove these characters, because otherwise we end up with garbled messaged for non-terminal notifications
 const removeColorsReg = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
 gulp.task('build', function() {
   console.info('compiling ts')
-  console.time('compile time')
+  console.time('compilation done')
   var tsResult = gulp.src(tsConfig.filesGlob)
         .pipe(sourcemaps.init())
 				.pipe(ts(tsProject))
-        .on('error', function(e){errorCount++; lastTsErrorMsg = e.message})
+        .on('error', function(e:any){errorCount++; lastTsErrorMsg = e.message})
   return merge([
         tsResult.dts.pipe(gulp.dest('./dist')),
         tsResult.js.pipe(gulp.dest('./dist')).on('end', function(){'ts compilation done'}),
@@ -35,7 +35,7 @@ gulp.task('build', function() {
     ])
     .pipe(util.noop())//fake pipe needed, otherwise there is no on-end event
     .on('end', function(){
-      console.timeEnd('compile time', 'compilation done')
+      console.timeEnd('compilation done')
       if (lastTsErrorMsg) {
         notifier.notify({title: 'Server Compilation Errors (' + errorCount + ')', message: lastTsErrorMsg.replace(removeColorsReg, '')})
         lastTsErrorMsg = null; errorCount = 0;
