@@ -13,3 +13,4 @@ test/**/*.js.map
 .settings/
 API/
 obj/
+!gulpfile.js
