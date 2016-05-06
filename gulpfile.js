@@ -17,6 +17,9 @@ var tsProject = ts.createProject('tsconfig.json',{
 
 var lastTsErrorMsg = null;
 var errorCount = 0;
+//regex taken from: https://github.com/chalk/ansi-regex/blob/master/index.js#L3
+//need to remove these characters, because otherwise we end up with garbled messaged for non-terminal notifications 
+const removeColorsReg = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
 gulp.task('build', function() {
   console.info('compiling ts')
   console.time('compile time')
