@@ -13,3 +13,5 @@ test/**/*.js.map
 .settings/
 API/
 obj/
+bin/
+dist/**/*.js
