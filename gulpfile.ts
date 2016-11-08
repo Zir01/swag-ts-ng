@@ -10,6 +10,7 @@ var path = require('path')
 var ts = require('gulp-typescript')
 var util = require('gulp-util');
 var notifier = require('node-notifier');
+var tsconfig = require('./tsconfig.json');
 var tsProject = ts.createProject('tsconfig.json',{
   declaration: true,
   typescript: require('typescript')
@@ -28,10 +29,10 @@ gulp.task('build', function() {
 				.pipe(ts(tsProject))
         .on('error', function(e:any){errorCount++; lastTsErrorMsg = e.message})
   return merge([
-        tsResult.dts.pipe(gulp.dest('./dist')),
-        tsResult.js.pipe(gulp.dest('./dist')).on('end', function(){'ts compilation done'}),
+        tsResult.dts.pipe(gulp.dest(tsConfig.compilerOptions.outDir)),
+        tsResult.js.pipe(gulp.dest(tsConfig.compilerOptions.outDir)).on('end', function(){'ts compilation done'}),
         tsResult.pipe(sourcemaps.write('./'))
-          .pipe(gulp.dest('./dist'))
+          .pipe(gulp.dest(tsConfig.compilerOptions.outDir))
     ])
     .pipe(util.noop())//fake pipe needed, otherwise there is no on-end event
     .on('end', function(){
@@ -44,6 +45,9 @@ gulp.task('build', function() {
       }
     })
 })
+gulp.task('watch', ['build'], function() {
+  gulp.watch(tsConfig.filesGlob, ['build'])
+});
 gulp.task('test', function () {
     //return gulp.src('./test/*.js', { read: false })
     //    .pipe(gulpMocha({ reporter: '' }));
