@@ -23,9 +23,13 @@ Swagger client Typescript Codegen for Angularjs
         clientClassName: "ApiDataService",              // optional
         singleFile: false                               // optional
     }
-    
+
     swag.process(options);
 
+## Building
+To transpile typescript to js, run:
+
+  `$ npm run build`
 ###Options
 
 | Field name          | Default                    | Description                                        |

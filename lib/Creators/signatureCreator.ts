@@ -3,7 +3,7 @@ import parameterParser  = require("../Parsers/parameterParser");
 import typeParser       = require("../Parsers/typeParser");
 
 class signatureCreator {
-    static create(options: ISwaggerOptions, pathsObject, modelPrefix: string): ISignatureDefinition[] {
+    static create(options: ISwaggerOptions, pathsObject:any, modelPrefix: string): ISignatureDefinition[] {
         var signatureDefinitions: ISignatureDefinition[] = [];
 
         for (var p in pathsObject) {

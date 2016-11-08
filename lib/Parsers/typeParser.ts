@@ -1,7 +1,7 @@
 ﻿import _ = require("lodash");
 
 class typeParser {
-    static parse(options: ISwaggerOptions, property, modelPrefix?: string): string {
+    static parse(options: ISwaggerOptions, property:any, modelPrefix?: string): string {
         if (property.schema) {
             return this.parse(options, property.schema, modelPrefix);
         }
@@ -11,7 +11,7 @@ class typeParser {
             if (property.$ref == "Object")
                 return "any";
 
-            
+
             var prefix: string = modelPrefix || "";
             var res = property.$ref.replace("#/definitions/", "");
             res = prefix + res;
