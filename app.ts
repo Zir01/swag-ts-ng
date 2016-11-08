@@ -1,14 +1,15 @@
-﻿import swaggerService   = require("./lib/SwaggerService");
+import 'source-map-support/register'//to get ts stacktraces
+import swaggerService   = require("./lib/SwaggerService");
 import http             = require("http");
 
-exports.process = (options) => {
+exports.process = (options:any) => {
     if (!options) {
         console.error("Sorry. Please supply options with swaggerPath");
     } else {
         http.get(options.swaggerPath, (res) => {
             res.setEncoding("utf-8");
             var swaggerString = "";
-            res.on("data", (data) => {
+            res.on("data", (data:string) => {
                 console.log("Swagger json found!");
                 swaggerString += data;
             });
@@ -35,7 +36,7 @@ exports.process = (options) => {
                 var swagSrv = new swaggerService(opt);
                 swagSrv.process();
             });
-        }).on("error", (e) => {
+        }).on("error", (e:any) => {
             console.log("Error : " + e.message);
         });
     }
